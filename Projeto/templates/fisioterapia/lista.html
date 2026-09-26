@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Fisioterapia{% endblock %}{% block page_title %}Sessões de Fisioterapia{% endblock %}
+{% block topbar_actions %}<a href="{% url 'fisioterapia:novo' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Nova Sessão</a>{% endblock %}
+{% block content %}
+<div class="table-card"><table class="table table-hover">
+<thead><tr><th>Idoso</th><th>Fisioterapeuta</th><th>Data/Hora</th><th>Duração</th><th>Status</th><th></th></tr></thead>
+<tbody>{% for s in sessoes %}<tr>
+  <td><div style="font-weight:500;">{{ s.idoso.nome }}</div></td>
+  <td style="font-size:.875rem;">{{ s.fisioterapeuta.get_full_name|default:"–" }}</td>
+  <td style="font-size:.875rem;">{{ s.data_hora|date:"d/m/Y H:i" }}</td>
+  <td style="font-size:.875rem;">{{ s.duracao_minutos }} min</td>
+  <td>
+    {% if s.status == 'realizada' %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.75rem;">Realizada</span>
+    {% elif s.status == 'agendada' %}<span class="badge" style="background:#E3F2FD;color:#1565C0;font-size:.75rem;">Agendada</span>
+    {% elif s.status == 'cancelada' %}<span class="badge" style="background:#FFEBEE;color:#C62828;font-size:.75rem;">Cancelada</span>
+    {% else %}<span class="badge bg-secondary" style="font-size:.75rem;">{{ s.get_status_display }}</span>{% endif %}
+  </td>
+  <td class="text-end">
+    <a href="{% url 'fisioterapia:detalhe' s.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+    <a href="{% url 'fisioterapia:editar' s.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+  </td>
+</tr>{% empty %}<tr><td colspan="6" class="text-center py-4 text-muted">Nenhuma sessão registrada.</td></tr>{% endfor %}</tbody>
+</table></div>{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }} – AsiloGest{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'fisioterapia:planos_lista' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Voltar</a>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+    <div class="form-card">
+      <form method="post">
+        {% csrf_token %}
+        {% include '_form_errors.html' %}
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">{{ form.idoso.label }} <span class="text-danger">*</span></label>
+            {{ form.idoso }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">{{ form.fisioterapeuta.label }}</label>
+            {{ form.fisioterapeuta }}
+          </div>
+          <div class="col-12">
+            <label class="form-label">{{ form.titulo.label }} <span class="text-danger">*</span></label>
+            {{ form.titulo }}
+          </div>
+          <div class="col-12">
+            <label class="form-label">{{ form.objetivo_geral.label }} <span class="text-danger">*</span></label>
+            {{ form.objetivo_geral }}
+          </div>
+          <div class="col-12">
+            <label class="form-label">{{ form.exercicios.label }} <span class="text-danger">*</span></label>
+            {{ form.exercicios }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ form.frequencia_semanal.label }}</label>
+            {{ form.frequencia_semanal }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ form.data_inicio.label }} <span class="text-danger">*</span></label>
+            {{ form.data_inicio }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ form.data_previsao_fim.label }}</label>
+            {{ form.data_previsao_fim }}
+          </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end mt-4">
+          <a href="{% url 'fisioterapia:planos_lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-lg me-1"></i>Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

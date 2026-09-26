@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block titulo %}Registrar Evolução{% endblock %}
+{% block conteudo %}
+<div class="container mt-4">
+  <h4>Registrar Evolução — {{ sessao.idoso.nome }}</h4>
+  <p class="text-muted">Sessão: {{ sessao.data_hora|date:"d/m/Y H:i" }} | 
+    Autorizada por: {{ sessao.autorizado_por.get_full_name }}</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label fw-bold">Procedimentos Realizados</label>
+      <textarea name="procedimentos" class="form-control" rows="4">{{ sessao.procedimentos }}</textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">Evolução do Paciente</label>
+      <textarea name="evolucao" class="form-control" rows="4">{{ sessao.evolucao }}</textarea>
+    </div>
+    <a href="{% url 'fisioterapia:lista' %}" class="btn btn-secondary">Cancelar</a>
+    <button type="submit" class="btn btn-primary">Salvar Evolução</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'relatorios/pdf/base_pdf.html' %}
+{% block meta %}Relatório de Medicamentos{% endblock %}
+{% block content %}
+<h1>Controle de Medicamentos</h1>
+
+{% if alertas %}
+<h2>&#9888; Estoque Baixo</h2>
+<table>
+  <thead><tr><th>Medicamento</th><th>Estoque Atual</th><th>Estoque Mínimo</th><th>Unidade</th></tr></thead>
+  <tbody>
+    {% for m in alertas %}
+    <tr>
+      <td>{{ m.nome }}</td>
+      <td><span class="badge badge-danger">{{ m.estoque_atual }}</span></td>
+      <td>{{ m.estoque_minimo }}</td>
+      <td>{{ m.unidade }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<h2>Histórico de Administrações (últimos 30 dias)</h2>
+<table>
+  <thead><tr><th>Data/Hora</th><th>Idoso</th><th>Medicamento</th><th>Administrado por</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for r in registros %}
+    <tr>
+      <td>{{ r.data_hora|date:"d/m/Y H:i" }}</td>
+      <td>{{ r.prescricao.idoso.nome }}</td>
+      <td>{{ r.prescricao.medicamento.nome }}</td>
+      <td>{{ r.administrado_por.get_full_name|default:"–" }}</td>
+      <td><span class="badge {% if r.status == 'administrado' %}badge-ok{% else %}badge-warn{% endif %}">{{ r.get_status_display }}</span></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">Nenhum registro no período.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

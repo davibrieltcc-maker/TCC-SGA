@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block title %}{{ idoso.nome }} – AsiloGest{% endblock %}
+{% block page_title %}{{ idoso.nome }}{% endblock %}
+{% block topbar_actions %}
+{% if not user.is_familiar %}
+  <a href="{% url 'idosos:editar' idoso.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil me-1"></i>Editar</a>
+{% endif %}
+{% if user.pode_ver_saude or user.is_familiar %}
+  <a href="{% url 'consultas:prontuario' idoso.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-journal-medical me-1"></i>Prontuário</a>
+{% endif %}
+<a href="{% url 'idosos:lista' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Voltar</a>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <!-- Card principal -->
+  <div class="col-12 col-lg-4">
+    <div class="form-card h-100">
+      <div class="text-center mb-3">
+        {% if idoso.foto %}
+          <img src="{{ idoso.foto.url }}" alt="{{ idoso.nome }}" style="width:90px;height:90px;object-fit:cover;border-radius:50%;border:3px solid #E8F5E9;">
+        {% else %}
+          <div style="width:90px;height:90px;background:#E8F5E9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:2rem;color:#2E7D32;font-weight:700;">{{ idoso.nome|first|upper }}</div>
+        {% endif %}
+        <h5 class="mt-2 mb-0" style="font-weight:700;">{{ idoso.nome }}</h5>
+        <small class="text-muted">{{ idoso.idade }} anos</small>
+        <div class="mt-2">
+          <span class="badge" style="{% if idoso.status == 'ativo' %}background:#E8F5E9;color:#2E7D32{% elif idoso.status == 'internado' %}background:#E3F2FD;color:#1565C0{% elif idoso.status == 'falecido' %}background:#FFEBEE;color:#C62828{% else %}background:#FFF3E0;color:#E65100{% endif %};font-size:.75rem;">
+            {{ idoso.get_status_display }}
+          </span>
+        </div>
+      </div>
+      <hr>
+      <dl class="row mb-0" style="font-size:.85rem;">
+        <dt class="col-5 text-muted">Quarto</dt><dd class="col-7">{{ idoso.numero_quarto|default:"–" }}</dd>
+        <dt class="col-5 text-muted">Nascimento</dt><dd class="col-7">{{ idoso.data_nascimento|date:"d/m/Y" }}</dd>
+        <dt class="col-5 text-muted">Sexo</dt><dd class="col-7">{{ idoso.get_sexo_display }}</dd>
+        {% if idoso.tipo_sanguineo %}<dt class="col-5 text-muted">Tipo Sang.</dt><dd class="col-7">{{ idoso.tipo_sanguineo }}</dd>{% endif %}
+        {% if idoso.cpf %}<dt class="col-5 text-muted">CPF</dt><dd class="col-7">{{ idoso.cpf }}</dd>{% endif %}
+        <dt class="col-5 text-muted">Entrada</dt><dd class="col-7">{{ idoso.data_entrada|date:"d/m/Y" }}</dd>
+      </dl>
+      {% if idoso.alergias %}
+      <div class="mt-3 p-2" style="background:#FFEBEE;border-radius:8px;font-size:.82rem;">
+        <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i><strong>Alergias:</strong> {{ idoso.alergias }}
+      </div>
+      {% endif %}
+      {% if idoso.condicoes_medicas %}
+      <div class="mt-2 p-2" style="background:#FFF3E0;border-radius:8px;font-size:.82rem;">
+        <i class="bi bi-clipboard2-pulse text-warning me-1"></i><strong>Condições:</strong> {{ idoso.condicoes_medicas }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Lado direito -->
+  <div class="col-12 col-lg-8">
+    <div class="row g-3">
+
+      <!-- Familiares -->
+      <div class="col-12">
+        <div class="table-card">
+          <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+            <span style="font-weight:600;font-size:.9rem;"><i class="bi bi-people me-2" style="color:#2E7D32;"></i>Familiares Vinculados</span>
+            {% if not user.is_familiar %}
+            <a href="{% url 'idosos:vincular_familiar' idoso.pk %}" class="btn btn-sm btn-outline-success" style="font-size:.75rem;"><i class="bi bi-plus"></i> Adicionar</a>
+            {% endif %}
+          </div>
+          <table class="table table-hover mb-0">
+            <tbody>
+              {% for v in familiares %}
+              <tr>
+                <td><div style="font-weight:500;font-size:.875rem;">{{ v.familiar.get_full_name }}</div><small class="text-muted">{{ v.parentesco }}</small></td>
+                <td><code style="font-size:.8rem;">{{ v.familiar.username }}</code></td>
+                <td>{{ v.familiar.telefone|default:"–" }}</td>
+                <td>{% if v.contato_principal %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.7rem;">Principal</span>{% endif %}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" class="text-center text-muted py-2" style="font-size:.85rem;">Nenhum familiar vinculado.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {% if user.pode_ver_saude or user.is_familiar %}
+      <!-- Consultas -->
+      <div class="col-12 col-md-6">
+        <div class="table-card h-100">
+          <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+            <span style="font-weight:600;font-size:.9rem;"><i class="bi bi-clipboard2-pulse me-2" style="color:#6A1B9A;"></i>Consultas Recentes</span>
+            {% if user.is_medico or user.is_recepcionista or user.is_administrador %}
+            <a href="{% url 'consultas:novo' %}" class="btn btn-sm btn-outline-primary" style="font-size:.75rem;"><i class="bi bi-plus"></i></a>
+            {% endif %}
+          </div>
+          <table class="table table-hover mb-0">
+            <tbody>
+              {% for c in consultas %}
+              <tr>
+                <td>
+                  <div style="font-size:.85rem;font-weight:500;">{{ c.get_tipo_display }}</div>
+                  <small class="text-muted">{{ c.data_hora|date:"d/m/Y H:i" }}</small>
+                </td>
+                <td><span class="badge" style="font-size:.7rem;{% if c.status == 'realizada' %}background:#E8F5E9;color:#2E7D32;{% elif c.status == 'agendada' %}background:#E3F2FD;color:#1565C0;{% else %}background:#FFEBEE;color:#C62828;{% endif %}">{{ c.get_status_display }}</span></td>
+                <td class="text-end"><a href="{% url 'consultas:detalhe' c.pk %}" class="btn btn-sm btn-outline-secondary" style="font-size:.7rem;"><i class="bi bi-eye"></i></a></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="3" class="text-center text-muted py-2" style="font-size:.85rem;">Sem consultas.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Medicamentos prescritos -->
+      <div class="col-12 col-md-6">
+        <div class="table-card h-100">
+          <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+            <span style="font-weight:600;font-size:.9rem;"><i class="bi bi-capsule me-2" style="color:#C62828;"></i>Medicamentos Ativos</span>
+            {% if user.is_medico or user.is_administrador %}
+            <a href="{% url 'medicamentos:nova_prescricao' idoso.pk %}" class="btn btn-sm btn-outline-primary" style="font-size:.75rem;"><i class="bi bi-plus"></i></a>
+            {% endif %}
+          </div>
+          <table class="table table-hover mb-0">
+            <tbody>
+              {% for p in prescricoes %}
+              <tr>
+                <td>
+                  <div style="font-size:.85rem;font-weight:500;">{{ p.medicamento.nome }}</div>
+                  <small class="text-muted">{{ p.dose }} · {{ p.get_frequencia_display }}</small>
+                  {% if p.horarios %}<div><small class="text-muted"><i class="bi bi-clock me-1"></i>{{ p.horarios }}</small></div>{% endif %}
+                </td>
+                <td class="text-end">
+                  {% if user.is_medico or user.is_enfermeiro or user.is_administrador %}
+                  <a href="{% url 'medicamentos:registrar_administracao' p.pk %}" class="btn btn-sm btn-outline-success" style="font-size:.7rem;" title="Registrar"><i class="bi bi-check2"></i></a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="2" class="text-center text-muted py-2" style="font-size:.85rem;">Sem prescrições ativas.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Fisioterapia -->
+      <div class="col-12 col-md-6">
+        <div class="table-card h-100">
+          <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+            <span style="font-weight:600;font-size:.9rem;"><i class="bi bi-activity me-2" style="color:#2E7D32;"></i>Fisioterapia Recente</span>
+            {% if user.is_fisioterapeuta or user.is_administrador %}
+            <a href="{% url 'fisioterapia:novo' %}" class="btn btn-sm btn-outline-primary" style="font-size:.75rem;"><i class="bi bi-plus"></i></a>
+            {% endif %}
+          </div>
+          <table class="table table-hover mb-0">
+            <tbody>
+              {% for s in sessoes_fisio %}
+              <tr>
+                <td>
+                  <div style="font-size:.85rem;">{{ s.data_hora|date:"d/m/Y H:i" }}</div>
+                  <small class="text-muted">{{ s.objetivo|truncatechars:30|default:"Sessão" }}</small>
+                </td>
+                <td>{% if s.autorizada %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.7rem;">Autorizada</span>{% else %}<span class="badge" style="background:#FFF3E0;color:#E65100;font-size:.7rem;">Aguardando</span>{% endif %}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="2" class="text-center text-muted py-2" style="font-size:.85rem;">Sem sessões.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Rotina de Hoje -->
+      <div class="col-12 col-md-6">
+        <div class="table-card h-100">
+          <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+            <span style="font-weight:600;font-size:.9rem;"><i class="bi bi-calendar2-check me-2" style="color:#1565C0;"></i>Rotina de Hoje</span>
+            {% if user.is_enfermeiro or user.is_administrador %}
+            <a href="{% url 'atividades:novo' %}?idoso={{ idoso.pk }}" class="btn btn-sm btn-outline-primary" style="font-size:.75rem;"><i class="bi bi-plus"></i></a>
+            {% endif %}
+          </div>
+          <div class="p-3">
+            {% for r in rotinas %}
+            {% for p in r.periodos.all %}
+            <div class="mb-2 p-2" style="background:#F9FAFB;border-radius:8px;font-size:.82rem;">
+              <strong>{{ p.get_periodo_display }}</strong>
+              <div class="mt-1 d-flex flex-wrap gap-1">
+                {% if p.banho_realizado %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;">Banho ✓</span>{% endif %}
+                {% if p.higiene_oral %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;">Higiene ✓</span>{% endif %}
+                {% if p.troca_roupa %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;">Roupa ✓</span>{% endif %}
+                {% if p.refeicoes_realizadas %}<span class="badge" style="background:#E3F2FD;color:#1565C0;">{{ p.refeicoes_realizadas }}</span>{% endif %}
+              </div>
+            </div>
+            {% empty %}
+            <p class="text-muted mb-0" style="font-size:.85rem;">Nenhum período registrado ainda hoje.</p>
+            {% endfor %}
+            {% empty %}
+            <p class="text-muted mb-0" style="font-size:.85rem;">Nenhuma rotina registrada hoje.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Checklists de Atividades Personalizadas -->
+      <div class="col-12 col-md-6">
+        <div class="table-card h-100">
+          <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+            <span style="font-weight:600;font-size:.9rem;"><i class="bi bi-list-check me-2" style="color:#6A1B9A;"></i>Atividades Personalizadas</span>
+            <div class="d-flex gap-1">
+              {% if checklists_ativos %}
+              <a href="{% url 'atividades:checklist_lista' idoso.pk %}" class="btn btn-sm btn-outline-secondary" style="font-size:.75rem;"><i class="bi bi-list-ul"></i></a>
+              {% endif %}
+              {% if user.is_medico or user.is_enfermeiro or user.is_fisioterapeuta or user.is_administrador %}
+              <a href="{% url 'atividades:checklist_novo' idoso.pk %}" class="btn btn-sm btn-outline-primary" style="font-size:.75rem;"><i class="bi bi-plus"></i></a>
+              {% endif %}
+            </div>
+          </div>
+          <div class="p-3">
+            {% for c in checklists_ativos %}
+            <div class="mb-2 p-2" style="background:#F9FAFB;border-radius:8px;font-size:.82rem;">
+              <strong>{{ c.titulo }}</strong>
+              <div class="text-muted" style="font-size:.75rem;">{{ c.dias_semana_display }}</div>
+              <div class="mt-1 d-flex flex-wrap gap-1">
+                {% for item in c.itens.all %}<span class="badge" style="background:#EDE7F6;color:#6A1B9A;">{{ item.descricao }}</span>{% endfor %}
+              </div>
+            </div>
+            {% empty %}
+            <p class="text-muted mb-0" style="font-size:.85rem;">Nenhuma checklist de atividades cadastrada.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

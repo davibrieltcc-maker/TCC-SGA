@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Desativar Usuário – AsiloGest{% endblock %}
+{% block page_title %}Desativar Usuário{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6">
+    <div class="form-card text-center">
+      <div style="width:64px;height:64px;background:#FFEBEE;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+        <i class="bi bi-person-dash" style="font-size:1.8rem;color:#C62828;"></i>
+      </div>
+      <h5 style="font-weight:600;color:#1B2A1E;">Desativar usuário?</h5>
+      <p class="text-muted" style="font-size:.9rem;">
+        O usuário <strong>{{ usuario.get_full_name }}</strong> ({{ usuario.get_perfil_display }}) será desativado
+        e não poderá mais acessar o sistema. Esta ação pode ser revertida editando o usuário.
+      </p>
+      <form method="post" class="d-flex gap-2 justify-content-center mt-3">
+        {% csrf_token %}
+        <a href="{% url 'usuarios_lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-danger">
+          <i class="bi bi-person-dash me-1"></i>Sim, desativar
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

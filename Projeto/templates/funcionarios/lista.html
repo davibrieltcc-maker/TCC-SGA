@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Funcionários{% endblock %}{% block page_title %}Funcionários{% endblock %}
+{% block topbar_actions %}<a href="{% url 'funcionarios:novo' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Novo Funcionário</a>{% endblock %}
+{% block content %}
+<div class="table-card"><table class="table table-hover">
+<thead><tr><th>Nome</th><th>Perfil</th><th>Registro Prof.</th><th>Vínculo</th><th>Turno</th><th></th></tr></thead>
+<tbody>{% for f in funcionarios %}<tr>
+  <td><div style="font-weight:500;">{{ f.usuario.get_full_name }}</div><small class="text-muted">{{ f.usuario.email }}</small></td>
+  <td style="font-size:.875rem;">{{ f.usuario.get_perfil_display }}</td>
+  <td style="font-size:.875rem;">{{ f.registro_profissional|default:"–" }}</td>
+  <td style="font-size:.875rem;">{{ f.get_vinculo_display }}</td>
+  <td style="font-size:.875rem;">{{ f.turno|default:"–" }}</td>
+  <td class="text-end">
+    <a href="{% url 'funcionarios:detalhe' f.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+    <a href="{% url 'funcionarios:editar' f.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+  </td>
+</tr>{% empty %}<tr><td colspan="6" class="text-center py-4 text-muted">Nenhum funcionário cadastrado.</td></tr>{% endfor %}</tbody>
+</table></div>{% endblock %}

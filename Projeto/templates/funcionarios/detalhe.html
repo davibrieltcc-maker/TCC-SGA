@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}{{ funcionario.usuario.get_full_name }}{% endblock %}{% block page_title %}{{ funcionario.usuario.get_full_name }}{% endblock %}
+{% block topbar_actions %}<a href="{% url 'funcionarios:editar' funcionario.pk %}" class="btn btn-primary btn-sm"><i class="bi bi-pencil me-1"></i>Editar</a>{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-lg-7"><div class="form-card">
+<dl class="row mb-0" style="font-size:.9rem;">
+  <dt class="col-4 text-muted">Nome</dt><dd class="col-8">{{ funcionario.usuario.get_full_name }}</dd>
+  <dt class="col-4 text-muted">Perfil</dt><dd class="col-8">{{ funcionario.usuario.get_perfil_display }}</dd>
+  <dt class="col-4 text-muted">E-mail</dt><dd class="col-8">{{ funcionario.usuario.email }}</dd>
+  <dt class="col-4 text-muted">Telefone</dt><dd class="col-8">{{ funcionario.usuario.telefone|default:"–" }}</dd>
+  <dt class="col-4 text-muted">CPF</dt><dd class="col-8">{{ funcionario.usuario.cpf|default:"–" }}</dd>
+  <dt class="col-4 text-muted">Registro Prof.</dt><dd class="col-8">{{ funcionario.registro_profissional|default:"–" }}</dd>
+  <dt class="col-4 text-muted">Especialidade</dt><dd class="col-8">{{ funcionario.especialidade|default:"–" }}</dd>
+  <dt class="col-4 text-muted">Vínculo</dt><dd class="col-8">{{ funcionario.get_vinculo_display }}</dd>
+  <dt class="col-4 text-muted">Admissão</dt><dd class="col-8">{{ funcionario.data_admissao|date:"d/m/Y" }}</dd>
+  <dt class="col-4 text-muted">Carga Horária</dt><dd class="col-8">{{ funcionario.carga_horaria }}h/semana</dd>
+  <dt class="col-4 text-muted">Turno</dt><dd class="col-8">{{ funcionario.turno|default:"–" }}</dd>
+</dl>
+</div></div></div>{% endblock %}

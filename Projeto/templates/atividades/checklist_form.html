@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}{% block page_title %}{{ titulo }} – {{ idoso.nome }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-8"><div class="form-card">
+<form method="post">{% csrf_token %}
+{% include '_form_errors.html' %}
+<div class="row g-3">
+  <div class="col-12"><label class="form-label">Título</label>{{ form.titulo }}</div>
+  <div class="col-12"><label class="form-label">Descrição (opcional)</label>{{ form.descricao }}</div>
+  <div class="col-md-6"><label class="form-label">Início</label>{{ form.data_inicio }}</div>
+  <div class="col-md-6"><label class="form-label">Fim (deixe em branco para sem prazo)</label>{{ form.data_fim }}</div>
+
+  <div class="col-12">
+    <label class="form-label d-block">Dias da Semana</label>
+    <div class="d-flex flex-wrap gap-3">
+      {% for cb in form.dias_semana %}
+      <div class="form-check">
+        {{ cb.tag }}
+        <label class="form-check-label" for="{{ cb.id_for_label }}">{{ cb.choice_label }}</label>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="col-12">
+    <hr>
+    <label class="form-label d-block">Itens da Checklist</label>
+    {{ formset.management_form }}
+    <div id="itens-lista">
+      {% for f in formset %}
+      <div class="item-row d-flex gap-2 align-items-start mb-2">
+        {{ f.id }}
+        <div class="flex-grow-1">
+          {{ f.descricao }}
+          {% if f.descricao.errors %}<div class="text-danger small">{{ f.descricao.errors.0 }}</div>{% endif %}
+        </div>
+        <div style="display:none;">{{ f.DELETE }}</div>
+        <button type="button" class="btn btn-outline-danger remove-item" title="Remover"><i class="bi bi-x-lg"></i></button>
+      </div>
+      {% endfor %}
+    </div>
+    <button type="button" id="add-item" class="btn btn-sm btn-outline-primary mt-1">
+      <i class="bi bi-plus-lg me-1"></i>Adicionar item
+    </button>
+    <div class="form-text">Ex.: "Caminhada 20 minutos", "Alongamento", "Tomar sol".</div>
+
+    <template id="item-empty-template">
+      <div class="item-row d-flex gap-2 align-items-start mb-2">
+        {{ formset.empty_form.id }}
+        <div class="flex-grow-1">{{ formset.empty_form.descricao }}</div>
+        <div style="display:none;">{{ formset.empty_form.DELETE }}</div>
+        <button type="button" class="btn btn-outline-danger remove-item" title="Remover"><i class="bi bi-x-lg"></i></button>
+      </div>
+    </template>
+  </div>
+
+  <div class="col-12 d-flex gap-2 pt-2">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Salvar</button>
+    <a href="{% url 'idosos:detalhe' idoso.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</div>
+</form>
+</div></div></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var totalInput = document.getElementById('id_itens-TOTAL_FORMS');
+  var lista = document.getElementById('itens-lista');
+  var addBtn = document.getElementById('add-item');
+  var emptyTpl = document.getElementById('item-empty-template').innerHTML;
+  if (!totalInput || !lista) return;
+
+  function bindRow(row) {
+    var btn = row.querySelector('.remove-item');
+    btn.addEventListener('click', function () {
+      var idInput = row.querySelector('input[name$="-id"]');
+      if (idInput && idInput.value) {
+        // item já existente: marca para exclusão e esconde (mantém no envio)
+        var delInput = row.querySelector('input[name$="-DELETE"]');
+        if (delInput) delInput.checked = true;
+        row.style.display = 'none';
+      } else {
+        // item novo ainda não salvo: só remove da tela
+        row.remove();
+      }
+    });
+  }
+
+  lista.querySelectorAll('.item-row').forEach(bindRow);
+
+  addBtn.addEventListener('click', function () {
+    var idx = parseInt(totalInput.value, 10);
+    var html = emptyTpl.split('__prefix__').join(idx);
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = html.trim();
+    var row = wrapper.querySelector('.item-row');
+    lista.appendChild(row);
+    bindRow(row);
+    totalInput.value = idx + 1;
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Rotina{% endblock %}{% block page_title %}Rotina – {{ rotina.idoso.nome }}{% endblock %}
+{% block topbar_actions %}<a href="{% url 'atividades:editar' rotina.pk %}" class="btn btn-primary btn-sm"><i class="bi bi-pencil me-1"></i>Editar</a>{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-lg-9"><div class="form-card">
+<p class="text-muted mb-3">{{ rotina.data|date:"d/m/Y" }}</p>
+{% if rotina.observacoes_gerais %}<p style="font-size:.9rem;"><strong>Obs. Gerais:</strong> {{ rotina.observacoes_gerais }}</p>{% endif %}
+
+{% for p in periodos %}
+<hr>
+<h6 style="font-weight:600;color:#1565C0;"><i class="bi bi-clock-history me-2"></i>{{ p.get_periodo_display }}</h6>
+<div class="row g-3">
+  <div class="col-md-6">
+    <h6 style="font-weight:600;color:#2E7D32;font-size:.9rem;"><i class="bi bi-droplet me-2"></i>Higienização</h6>
+    <ul class="list-unstyled mb-0" style="font-size:.87rem;">
+      <li><i class="bi bi-{% if p.banho_realizado %}check-circle-fill text-success{% else %}x-circle text-muted{% endif %} me-2"></i>Banho</li>
+      <li><i class="bi bi-{% if p.higiene_oral %}check-circle-fill text-success{% else %}x-circle text-muted{% endif %} me-2"></i>Higiene Oral</li>
+      <li><i class="bi bi-{% if p.troca_roupa %}check-circle-fill text-success{% else %}x-circle text-muted{% endif %} me-2"></i>Troca de Roupa</li>
+      <li><i class="bi bi-{% if p.curativo %}check-circle-fill text-success{% else %}x-circle text-muted{% endif %} me-2"></i>Curativo</li>
+    </ul>
+    {% if p.obs_higiene %}<p class="mt-2 text-muted" style="font-size:.82rem;">{{ p.obs_higiene }}</p>{% endif %}
+  </div>
+  <div class="col-md-6">
+    <h6 style="font-weight:600;color:#2E7D32;font-size:.9rem;"><i class="bi bi-egg-fried me-2"></i>Alimentação</h6>
+    <dl style="font-size:.87rem;">
+      <dt class="text-muted">Refeições</dt><dd>{{ p.refeicoes_realizadas|default:"–" }}</dd>
+      <dt class="text-muted">Aceitação</dt><dd>{{ p.get_aceitacao_alimentar_display|default:"–" }}</dd>
+    </dl>
+    {% if p.obs_alimentacao %}<p class="text-muted" style="font-size:.82rem;">{{ p.obs_alimentacao }}</p>{% endif %}
+  </div>
+
+  <div class="col-md-4">
+    <h6 style="font-weight:600;color:#6A1B9A;font-size:.9rem;"><i class="bi bi-capsule me-2"></i>Medicamentos</h6>
+    {% if p.periodo == 'manha' %}{% for dose in medicamentos.manha %}
+      <div class="mb-1" style="font-size:.85rem;"><i class="bi bi-{% if dose.registro and dose.registro.status == 'administrado' %}check-circle-fill text-success{% elif dose.registro %}x-circle-fill text-danger{% else %}hourglass-split text-warning{% endif %} me-1"></i>{{ dose.prescricao.medicamento.nome }} – {{ dose.horario|time:"H:i" }}{% if dose.registro %} <span class="text-muted">({{ dose.registro.data_hora|time:"H:i" }})</span>{% endif %}</div>
+    {% empty %}<p class="text-muted mb-0" style="font-size:.85rem;">Nenhum.</p>{% endfor %}{% endif %}
+    {% if p.periodo == 'tarde' %}{% for dose in medicamentos.tarde %}
+      <div class="mb-1" style="font-size:.85rem;"><i class="bi bi-{% if dose.registro and dose.registro.status == 'administrado' %}check-circle-fill text-success{% elif dose.registro %}x-circle-fill text-danger{% else %}hourglass-split text-warning{% endif %} me-1"></i>{{ dose.prescricao.medicamento.nome }} – {{ dose.horario|time:"H:i" }}{% if dose.registro %} <span class="text-muted">({{ dose.registro.data_hora|time:"H:i" }})</span>{% endif %}</div>
+    {% empty %}<p class="text-muted mb-0" style="font-size:.85rem;">Nenhum.</p>{% endfor %}{% endif %}
+    {% if p.periodo == 'noite' %}{% for dose in medicamentos.noite %}
+      <div class="mb-1" style="font-size:.85rem;"><i class="bi bi-{% if dose.registro and dose.registro.status == 'administrado' %}check-circle-fill text-success{% elif dose.registro %}x-circle-fill text-danger{% else %}hourglass-split text-warning{% endif %} me-1"></i>{{ dose.prescricao.medicamento.nome }} – {{ dose.horario|time:"H:i" }}{% if dose.registro %} <span class="text-muted">({{ dose.registro.data_hora|time:"H:i" }})</span>{% endif %}</div>
+    {% empty %}<p class="text-muted mb-0" style="font-size:.85rem;">Nenhum.</p>{% endfor %}{% endif %}
+  </div>
+
+  <div class="col-md-4">
+    <h6 style="font-weight:600;color:#1565C0;font-size:.9rem;"><i class="bi bi-clipboard2-pulse me-2"></i>Consultas</h6>
+    {% if p.periodo == 'manha' %}{% for c in consultas.manha %}
+      <div class="mb-1" style="font-size:.85rem;"><i class="bi bi-{% if c.status == 'realizada' %}check-circle-fill text-success{% elif c.status == 'cancelada' or c.status == 'falta' %}x-circle-fill text-danger{% else %}hourglass-split text-warning{% endif %} me-1"></i>{{ c.data_hora|time:"H:i" }} – {{ c.get_tipo_display }}</div>
+    {% empty %}<p class="text-muted mb-0" style="font-size:.85rem;">Nenhuma.</p>{% endfor %}{% endif %}
+    {% if p.periodo == 'tarde' %}{% for c in consultas.tarde %}
+      <div class="mb-1" style="font-size:.85rem;"><i class="bi bi-{% if c.status == 'realizada' %}check-circle-fill text-success{% elif c.status == 'cancelada' or c.status == 'falta' %}x-circle-fill text-danger{% else %}hourglass-split text-warning{% endif %} me-1"></i>{{ c.data_hora|time:"H:i" }} – {{ c.get_tipo_display }}</div>
+    {% empty %}<p class="text-muted mb-0" style="font-size:.85rem;">Nenhuma.</p>{% endfor %}{% endif %}
+    {% if p.periodo == 'noite' %}{% for c in consultas.noite %}
+      <div class="mb-1" style="font-size:.85rem;"><i class="bi bi-{% if c.status == 'realizada' %}check-circle-fill text-success{% elif c.status == 'cancelada' or c.status == 'falta' %}x-circle-fill text-danger{% else %}hourglass-split text-warning{% endif %} me-1"></i>{{ c.data_hora|time:"H:i" }} – {{ c.get_tipo_display }}</div>
+    {% empty %}<p class="text-muted mb-0" style="font-size:.85rem;">Nenhuma.</p>{% endfor %}{% endif %}
+  </div>
+
+  <div class="col-md-4">
+    <h6 style="font-weight:600;color:#E65100;font-size:.9rem;"><i class="bi bi-activity me-2"></i>Fisioterapia</h6>
+    {% if p.periodo == 'manha' %}{% for s in fisioterapias.manha %}
+      <div class="mb-1" style="font-size:.85rem;"><i class="bi bi-{% if s.status == 'realizada' %}check-circle-fill text-success{% elif s.status == 'cancelada' or s.status == 'falta' %}x-circle-fill text-danger{% else %}hourglass-split text-warning{% endif %} me-1"></i>{{ s.data_hora|time:"H:i" }} – {{ s.objetivo|default:"Sessão" }}</div>
+    {% empty %}<p class="text-muted mb-0" style="font-size:.85rem;">Nenhuma.</p>{% endfor %}{% endif %}
+    {% if p.periodo == 'tarde' %}{% for s in fisioterapias.tarde %}
+      <div class="mb-1" style="font-size:.85rem;"><i class="bi bi-{% if s.status == 'realizada' %}check-circle-fill text-success{% elif s.status == 'cancelada' or s.status == 'falta' %}x-circle-fill text-danger{% else %}hourglass-split text-warning{% endif %} me-1"></i>{{ s.data_hora|time:"H:i" }} – {{ s.objetivo|default:"Sessão" }}</div>
+    {% empty %}<p class="text-muted mb-0" style="font-size:.85rem;">Nenhuma.</p>{% endfor %}{% endif %}
+    {% if p.periodo == 'noite' %}{% for s in fisioterapias.noite %}
+      <div class="mb-1" style="font-size:.85rem;"><i class="bi bi-{% if s.status == 'realizada' %}check-circle-fill text-success{% elif s.status == 'cancelada' or s.status == 'falta' %}x-circle-fill text-danger{% else %}hourglass-split text-warning{% endif %} me-1"></i>{{ s.data_hora|time:"H:i" }} – {{ s.objetivo|default:"Sessão" }}</div>
+    {% empty %}<p class="text-muted mb-0" style="font-size:.85rem;">Nenhuma.</p>{% endfor %}{% endif %}
+  </div>
+</div>
+{% endfor %}
+
+<hr>
+<h6 style="font-weight:600;color:#6A1B9A;"><i class="bi bi-list-check me-2"></i>Atividades Personalizadas do Dia</h6>
+{% for item in checklist_itens %}
+<div class="d-flex align-items-start gap-2 mb-2" style="font-size:.9rem;">
+  {% if item.registro_do_dia == None %}
+    <i class="bi bi-hourglass-split text-warning me-1"></i>
+  {% elif item.registro_do_dia.realizado %}
+    <i class="bi bi-check-circle-fill text-success me-1"></i>
+  {% else %}
+    <i class="bi bi-x-circle-fill text-danger me-1"></i>
+  {% endif %}
+  <div>
+    <strong>{{ item.descricao }}</strong>
+    <span class="text-muted"> – {{ item.checklist.titulo }}</span>
+    {% if item.registro_do_dia == None %}
+      <div class="text-muted" style="font-size:.8rem;">Ainda não registrado hoje.</div>
+    {% elif item.registro_do_dia.observacoes %}
+      <div class="text-muted" style="font-size:.8rem;">{{ item.registro_do_dia.observacoes }}</div>
+    {% endif %}
+  </div>
+</div>
+{% empty %}
+<p class="text-muted mb-0" style="font-size:.9rem;">Nenhuma atividade personalizada prevista para este dia.</p>
+{% endfor %}
+</div></div></div>{% endblock %}

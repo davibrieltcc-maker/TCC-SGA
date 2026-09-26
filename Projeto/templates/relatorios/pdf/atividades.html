@@ -1,0 +1,27 @@
+{% extends 'relatorios/pdf/base_pdf.html' %}
+{% block meta %}Atividades do dia {{ data_filtro }}{% endblock %}
+{% block content %}
+<h1>Relatório de Atividades Diárias</h1>
+<p style="font-size:10px;color:#6B7280;">Data: {{ data_filtro|date:"d/m/Y" }}</p>
+<table>
+  <thead><tr><th>Idoso</th><th>Período</th><th>Banho</th><th>Higiene</th><th>Roupa</th><th>Refeição</th><th>Aceitação</th><th>Responsável</th></tr></thead>
+  <tbody>
+    {% for r in rotinas %}
+    {% for p in r.periodos.all %}
+    <tr>
+      <td>{{ r.idoso.nome }}</td>
+      <td>{{ p.get_periodo_display }}</td>
+      <td>{% if p.banho_realizado %}Sim{% else %}Não{% endif %}</td>
+      <td>{% if p.higiene_oral %}Sim{% else %}Não{% endif %}</td>
+      <td>{% if p.troca_roupa %}Sim{% else %}Não{% endif %}</td>
+      <td>{{ p.refeicoes_realizadas|default:"–" }}</td>
+      <td>{{ p.get_aceitacao_alimentar_display|default:"–" }}</td>
+      <td>{{ p.responsavel.get_full_name|default:"–" }}</td>
+    </tr>
+    {% endfor %}
+    {% empty %}
+    <tr><td colspan="8">Nenhuma rotina para esta data.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

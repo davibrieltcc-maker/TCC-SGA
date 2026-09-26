@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Checklists de Atividades – {{ idoso.nome }}{% endblock %}
+{% block page_title %}Checklists de Atividades – {{ idoso.nome }}{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'idosos:detalhe' idoso.pk %}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left me-1"></i>Voltar</a>
+<a href="{% url 'atividades:checklist_novo' idoso.pk %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Nova Checklist</a>
+{% endblock %}
+
+{% block content %}
+<div class="table-card">
+  <table class="table table-hover">
+    <thead>
+      <tr><th>Título</th><th>Itens</th><th>Dias</th><th>Período</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for c in checklists %}
+      <tr>
+        <td style="font-weight:500;font-size:.875rem;">{{ c.titulo }}</td>
+        <td style="font-size:.82rem;">
+          {% for item in c.itens.all %}<div>{{ item.descricao }}</div>{% endfor %}
+        </td>
+        <td style="font-size:.8rem;">{{ c.dias_semana_display }}</td>
+        <td style="font-size:.85rem;">
+          {{ c.data_inicio|date:"d/m/Y" }} – {{ c.data_fim|date:"d/m/Y"|default:"sem prazo" }}
+        </td>
+        <td>
+          {% if c.ativo %}
+            <span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.75rem;">Ativa</span>
+          {% else %}
+            <span class="badge" style="background:#FFEBEE;color:#C62828;font-size:.75rem;">Encerrada</span>
+          {% endif %}
+        </td>
+        <td class="text-end">
+          <a href="{% url 'atividades:checklist_editar' c.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+          {% if c.ativo %}
+          <a href="{% url 'atividades:checklist_encerrar' c.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-x-lg"></i></a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center py-4 text-muted">Nenhuma checklist de atividades cadastrada.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

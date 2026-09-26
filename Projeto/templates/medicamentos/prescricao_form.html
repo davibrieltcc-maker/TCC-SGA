@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Nova Prescrição{% endblock %}{% block page_title %}Nova Prescrição – {{ idoso.nome }}{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-lg-7"><div class="form-card">
+<form method="post">{% csrf_token %}
+{% include '_form_errors.html' %}
+<div class="row g-3">
+  <div class="col-12"><label class="form-label">Medicamento</label>{{ form.medicamento }}</div>
+  <div class="col-md-6"><label class="form-label">Dose</label>{{ form.dose }}</div>
+  <div class="col-md-6"><label class="form-label">Frequência</label>{{ form.frequencia }}</div>
+
+  <div class="col-12">
+    <label class="form-label d-block">Horários</label>
+    {{ form.horarios }}
+    <div id="horarios-lista"></div>
+    <button type="button" id="add-horario" class="btn btn-sm btn-outline-primary mt-1">
+      <i class="bi bi-plus-lg me-1"></i>Adicionar horário
+    </button>
+    <div class="form-text">A quantidade se ajusta à frequência escolhida. Você pode adicionar ou remover horários.</div>
+  </div>
+
+  <div class="col-md-6"><label class="form-label">Início</label>{{ form.data_inicio }}</div>
+  <div class="col-md-6"><label class="form-label">Fim (opcional)</label>{{ form.data_fim }}</div>
+  <div class="col-12"><label class="form-label">Via de Administração</label>{{ form.via_administracao }}</div>
+  <div class="col-12"><label class="form-label">Observações</label>{{ form.observacoes }}</div>
+  <div class="col-12 d-flex gap-2 pt-2">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Prescrever</button>
+    <a href="{% url 'idosos:detalhe' idoso.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</div></form></div></div></div>{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var hidden = document.getElementById('id_horarios');
+  var freq   = document.getElementById('id_frequencia');
+  var lista  = document.getElementById('horarios-lista');
+  var addBtn = document.getElementById('add-horario');
+  if (!hidden || !lista) return;
+
+  var MAX = 12;
+  // Quantos horários cada frequência sugere. Ausente = deixa o usuário decidir.
+  var QTD_POR_FREQ = {
+    '1x_dia': 1, '2x_dia': 2, '3x_dia': 3, '4x_dia': 4,
+    'cada_12h': 2, 'cada_8h': 3, 'cada_6h': 4,
+    'semanal': 1, 'sob_demanda': 0
+  };
+
+  function sync() {
+    var vals = [];
+    lista.querySelectorAll('.horario-input').forEach(function (inp) {
+      var v = inp.value.trim();
+      if (v) vals.push(v);
+    });
+    hidden.value = vals.join(', ');
+  }
+
+  function makeRow(value) {
+    var row = document.createElement('div');
+    row.className = 'input-group input-group-sm mb-2 horario-row';
+    row.style.maxWidth = '220px';
+    row.innerHTML =
+      '<span class="input-group-text"><i class="bi bi-clock"></i></span>' +
+      '<input type="time" class="form-control horario-input">' +
+      '<button type="button" class="btn btn-outline-danger remove-horario" title="Remover">' +
+        '<i class="bi bi-x-lg"></i></button>';
+    if (value) row.querySelector('.horario-input').value = value;
+    row.querySelector('.horario-input').addEventListener('input', sync);
+    row.querySelector('.remove-horario').addEventListener('click', function () {
+      row.remove();
+      sync();
+    });
+    return row;
+  }
+
+  function count() { return lista.querySelectorAll('.horario-row').length; }
+
+  function addRow(value) {
+    if (count() >= MAX) return;
+    lista.appendChild(makeRow(value || ''));
+    sync();
+  }
+
+  function setCount(n) {
+    n = Math.max(0, Math.min(MAX, n));
+    while (count() < n) lista.appendChild(makeRow(''));
+    var rows = lista.querySelectorAll('.horario-row');
+    for (var i = rows.length - 1; i >= n; i--) rows[i].remove();
+    sync();
+  }
+
+  // Inicializa: usa o valor já existente (re-render após erro) ou a frequência.
+  var iniciais = (hidden.value || '').split(',').map(function (s) { return s.trim(); })
+                 .filter(Boolean);
+  if (iniciais.length) {
+    iniciais.forEach(function (v) { lista.appendChild(makeRow(v)); });
+  } else {
+    var q0 = freq ? QTD_POR_FREQ[freq.value] : undefined;
+    setCount(q0 === undefined ? 1 : q0);
+  }
+  sync();
+
+  addBtn.addEventListener('click', function () { addRow(''); });
+
+  if (freq) {
+    freq.addEventListener('change', function () {
+      var q = QTD_POR_FREQ[freq.value];
+      if (q === undefined) return;      // 'customizado' e outros: não mexe
+      setCount(q);
+    });
+  }
+
+  // Garante que o hidden esteja sincronizado no envio.
+  var form = hidden.closest('form');
+  if (form) form.addEventListener('submit', sync);
+})();
+</script>
+{% endblock %}

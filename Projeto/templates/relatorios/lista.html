@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Relatórios – AsiloGest{% endblock %}
+{% block page_title %}Relatórios{% endblock %}
+
+{% block content %}
+{% if user.is_familiar %}
+<div class="row g-3">
+  <div class="col-12">
+    <div class="stat-card" style="border-left:4px solid #2E7D32;">
+      <h6 style="font-weight:600;margin-bottom:.25rem;"><i class="bi bi-bar-chart-line me-2" style="color:#2E7D32;"></i>Relatório do Familiar</h6>
+      <p class="text-muted mb-3" style="font-size:.875rem;">Veja o histórico completo do seu familiar: consultas, medicamentos administrados, sessões de fisioterapia e atividades diárias.</p>
+      <a href="{% url 'relatorios:familiar' %}" class="btn btn-primary">
+        <i class="bi bi-eye me-2"></i>Ver Relatório
+      </a>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="row g-3">
+  {% if user.is_administrador or user.is_medico or user.is_recepcionista %}
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="stat-card h-100">
+      <div class="stat-icon mb-3" style="background:#E8F5E9;color:#2E7D32;"><i class="bi bi-person-fill"></i></div>
+      <h6 style="font-weight:600;">Relatório de Idosos</h6>
+      <p class="text-muted" style="font-size:.875rem;">Lista completa dos residentes com dados cadastrais e de saúde.</p>
+      <div class="d-flex gap-2 mt-auto">
+        <a href="{% url 'relatorios:idosos' %}" class="btn btn-sm btn-outline-success">Ver</a>
+        <a href="{% url 'relatorios:idosos' %}?pdf=1" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-pdf me-1"></i>PDF</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user.is_administrador or user.is_medico or user.is_enfermeiro %}
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="stat-card h-100">
+      <div class="stat-icon mb-3" style="background:#FFEBEE;color:#C62828;"><i class="bi bi-capsule-pill"></i></div>
+      <h6 style="font-weight:600;">Controle de Medicamentos</h6>
+      <p class="text-muted" style="font-size:.875rem;">Alertas de estoque e histórico de administrações dos últimos 30 dias.</p>
+      <div class="d-flex gap-2 mt-auto">
+        <a href="{% url 'relatorios:medicamentos' %}" class="btn btn-sm btn-outline-danger">Ver</a>
+        <a href="{% url 'relatorios:medicamentos' %}?pdf=1" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-pdf me-1"></i>PDF</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user.is_administrador or user.is_medico or user.is_recepcionista %}
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="stat-card h-100">
+      <div class="stat-icon mb-3" style="background:#F3E5F5;color:#6A1B9A;"><i class="bi bi-clipboard2-pulse-fill"></i></div>
+      <h6 style="font-weight:600;">Relatório de Consultas</h6>
+      <p class="text-muted" style="font-size:.875rem;">Histórico de consultas médicas com filtro por período.</p>
+      <div class="d-flex gap-2 mt-auto">
+        <a href="{% url 'relatorios:consultas' %}" class="btn btn-sm btn-outline-primary">Ver</a>
+        <a href="{% url 'relatorios:consultas' %}?pdf=1" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-pdf me-1"></i>PDF</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user.is_administrador or user.is_medico or user.is_fisioterapeuta %}
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="stat-card h-100">
+      <div class="stat-icon mb-3" style="background:#E8F5E9;color:#2E7D32;"><i class="bi bi-activity"></i></div>
+      <h6 style="font-weight:600;">Relatório de Fisioterapia</h6>
+      <p class="text-muted" style="font-size:.875rem;">Sessões realizadas, pendentes de autorização e evolução dos pacientes.</p>
+      <div class="d-flex gap-2 mt-auto">
+        <a href="{% url 'relatorios:fisioterapia' %}" class="btn btn-sm btn-outline-success">Ver</a>
+        <a href="{% url 'relatorios:fisioterapia' %}?pdf=1" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-pdf me-1"></i>PDF</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user.is_administrador or user.is_enfermeiro or user.is_recepcionista %}
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="stat-card h-100">
+      <div class="stat-icon mb-3" style="background:#E3F2FD;color:#1565C0;"><i class="bi bi-calendar2-check"></i></div>
+      <h6 style="font-weight:600;">Relatório de Atividades</h6>
+      <p class="text-muted" style="font-size:.875rem;">Registro diário de higienização e alimentação por turno.</p>
+      <div class="d-flex gap-2 mt-auto">
+        <a href="{% url 'relatorios:atividades' %}" class="btn btn-sm btn-outline-primary">Ver</a>
+        <a href="{% url 'relatorios:atividades' %}?pdf=1" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-pdf me-1"></i>PDF</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}{% block page_title %}{{ titulo }}{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-lg-10"><div class="form-card">
+<form method="post">{% csrf_token %}
+{% include '_form_errors.html' %}
+<div class="row g-3 mb-1">
+  <div class="col-md-6"><label class="form-label">Idoso</label>{{ form.idoso }}</div>
+  <div class="col-md-3"><label class="form-label">Data</label>{{ form.data }}</div>
+</div>
+<div class="row g-3 mb-3">
+  <div class="col-12"><label class="form-label">Observações Gerais do Dia</label>{{ form.observacoes_gerais }}</div>
+</div>
+
+<ul class="nav nav-tabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="tab-manha-btn" data-bs-toggle="tab" data-bs-target="#tab-manha" type="button" role="tab">
+      <i class="bi bi-sunrise me-1"></i>Manhã
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="tab-tarde-btn" data-bs-toggle="tab" data-bs-target="#tab-tarde" type="button" role="tab">
+      <i class="bi bi-sun me-1"></i>Tarde
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="tab-noite-btn" data-bs-toggle="tab" data-bs-target="#tab-noite" type="button" role="tab">
+      <i class="bi bi-moon-stars me-1"></i>Noite
+    </button>
+  </li>
+</ul>
+<div class="tab-content border border-top-0 rounded-bottom p-3 mb-3">
+  <div class="tab-pane fade show active" id="tab-manha" role="tabpanel">
+    {% include 'atividades/_periodo_form.html' with cod='manha' pform=periodo_forms.manha %}
+  </div>
+  <div class="tab-pane fade" id="tab-tarde" role="tabpanel">
+    {% include 'atividades/_periodo_form.html' with cod='tarde' pform=periodo_forms.tarde %}
+  </div>
+  <div class="tab-pane fade" id="tab-noite" role="tabpanel">
+    {% include 'atividades/_periodo_form.html' with cod='noite' pform=periodo_forms.noite %}
+  </div>
+</div>
+
+<h6 class="text-muted mt-2 mb-2"><i class="bi bi-list-check me-2"></i>Atividades Personalizadas do Dia</h6>
+<div class="mb-2">
+  <p class="text-muted small mb-0" id="checklist-vazio">Selecione o idoso e a data para ver as atividades programadas.</p>
+  <p class="small mb-0" id="checklist-erro" style="display:none;color:#C62828;">
+    Não foi possível carregar as atividades do dia. Recarregue a página e tente novamente
+    (se o problema continuar, pode ser que sua sessão tenha expirado — faça login de novo).
+  </p>
+  <div id="checklist-itens"></div>
+</div>
+
+<input type="hidden" name="checklist_item_ids" id="checklist_item_ids" value="">
+<input type="hidden" name="med_slot_keys" id="med_slot_keys" value="">
+<input type="hidden" name="consulta_ids" id="consulta_ids" value="">
+<input type="hidden" name="fisio_ids" id="fisio_ids" value="">
+
+<div class="d-flex gap-2 pt-2">
+  <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Salvar</button>
+  <a href="{% url 'atividades:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+</div>
+</form></div></div></div>{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var PERIODOS = ['manha', 'tarde', 'noite'];
+  var idosoSel = document.getElementById('id_idoso');
+  var dataInp  = document.getElementById('id_data');
+  var wrap     = document.getElementById('checklist-itens');
+  var vazio    = document.getElementById('checklist-vazio');
+  var erro     = document.getElementById('checklist-erro');
+  var idsHidden = document.getElementById('checklist_item_ids');
+  var medKeysHidden = document.getElementById('med_slot_keys');
+  var consultaIdsHidden = document.getElementById('consulta_ids');
+  var fisioIdsHidden = document.getElementById('fisio_ids');
+  if (!idosoSel || !dataInp || !wrap) return;
+
+  function limparPeriodos() {
+    PERIODOS.forEach(function (cod) {
+      document.getElementById('med-' + cod).innerHTML = '';
+      document.getElementById('consultas-' + cod).innerHTML = '';
+      document.getElementById('fisio-' + cod).innerHTML = '';
+    });
+    medKeysHidden.value = '';
+    consultaIdsHidden.value = '';
+    fisioIdsHidden.value = '';
+  }
+
+  function mostrarMensagem(msg) {
+    wrap.innerHTML = '';
+    idsHidden.value = '';
+    limparPeriodos();
+    vazio.style.display = msg === 'vazio' ? '' : 'none';
+    erro.style.display = msg === 'erro' ? '' : 'none';
+  }
+
+  function renderChecklistItens(items) {
+    wrap.innerHTML = '';
+    var ids = [];
+    items.forEach(function (it) {
+      ids.push(it.id);
+      var row = document.createElement('div');
+      row.className = 'border rounded p-2 mb-2';
+      var obsVal = (it.observacoes || '').replace(/"/g, '&quot;');
+      row.innerHTML =
+        '<div class="d-flex align-items-start gap-2">' +
+          '<input type="checkbox" class="form-check-input mt-1" name="item_realizado_' + it.id + '"' + (it.realizado ? ' checked' : '') + '>' +
+          '<div class="flex-grow-1">' +
+            '<strong style="font-size:.85rem;">' + it.descricao + '</strong>' +
+            '<div class="text-muted" style="font-size:.75rem;">' + it.checklist_titulo + '</div>' +
+            '<input type="text" class="form-control form-control-sm mt-1" name="item_obs_' + it.id + '" placeholder="Observação (opcional)" value="' + obsVal + '">' +
+          '</div>' +
+        '</div>';
+      wrap.appendChild(row);
+    });
+    idsHidden.value = ids.join(',');
+    if (!items.length) {
+      wrap.innerHTML = '<p class="text-muted small mb-0">Nenhuma atividade personalizada programada para este idoso nesta data.</p>';
+    }
+  }
+
+  function renderPeriodo(cod, dados, medKeys, consultaIds, fisioIds) {
+    var medWrap = document.getElementById('med-' + cod);
+    var consWrap = document.getElementById('consultas-' + cod);
+    var fisioWrap = document.getElementById('fisio-' + cod);
+
+    medWrap.innerHTML = dados.medicamentos.length ? '' : '<p class="text-muted small mb-0">Nenhum medicamento programado.</p>';
+    dados.medicamentos.forEach(function (m) {
+      medKeys.push(m.slot_key);
+      var row = document.createElement('div');
+      row.className = 'border rounded p-2 mb-2';
+      row.innerHTML =
+        '<div class="d-flex align-items-start gap-2">' +
+          '<input type="checkbox" class="form-check-input mt-1" name="med_tomado_' + m.slot_key + '"' + (m.tomado ? ' checked' : '') + '>' +
+          '<div class="flex-grow-1">' +
+            '<strong style="font-size:.85rem;">' + m.medicamento + '</strong> <span class="text-muted" style="font-size:.75rem;">' + m.dose + '</span>' +
+            '<div class="text-muted" style="font-size:.75rem;">Previsto às ' + m.horario_previsto + ' — ' + m.status + '</div>' +
+            '<label class="small text-muted mb-0 mt-1 d-block">Horário administrado</label>' +
+            '<input type="time" class="form-control form-control-sm" style="max-width:140px;" name="med_horario_' + m.slot_key + '" value="' + m.horario_tomado + '">' +
+            '<input type="hidden" name="med_registro_' + m.slot_key + '" value="' + m.registro_id + '">' +
+          '</div>' +
+        '</div>';
+      medWrap.appendChild(row);
+    });
+
+    consWrap.innerHTML = dados.consultas.length ? '' : '<p class="text-muted small mb-0">Nenhuma consulta agendada.</p>';
+    dados.consultas.forEach(function (c) {
+      consultaIds.push(c.id);
+      var row = document.createElement('div');
+      row.className = 'form-check mb-1';
+      row.innerHTML =
+        '<input type="checkbox" class="form-check-input" name="consulta_realizada_' + c.id + '" id="consulta_' + c.id + '"' +
+        (c.realizada ? ' checked' : '') + (c.editavel ? '' : ' disabled') + '>' +
+        '<label class="form-check-label small" for="consulta_' + c.id + '">' + c.descricao + ' <span class="text-muted">(' + c.status + ')</span></label>';
+      consWrap.appendChild(row);
+    });
+
+    fisioWrap.innerHTML = dados.fisioterapias.length ? '' : '<p class="text-muted small mb-0">Nenhuma sessão de fisioterapia agendada.</p>';
+    dados.fisioterapias.forEach(function (s) {
+      fisioIds.push(s.id);
+      var row = document.createElement('div');
+      row.className = 'form-check mb-1';
+      row.innerHTML =
+        '<input type="checkbox" class="form-check-input" name="fisio_realizada_' + s.id + '" id="fisio_' + s.id + '"' +
+        (s.realizada ? ' checked' : '') + (s.editavel ? '' : ' disabled') + '>' +
+        '<label class="form-check-label small" for="fisio_' + s.id + '">' + s.descricao + ' <span class="text-muted">(' + s.status + ')</span></label>';
+      fisioWrap.appendChild(row);
+    });
+  }
+
+  function render(json) {
+    vazio.style.display = 'none';
+    erro.style.display = 'none';
+    renderChecklistItens(json.items || []);
+
+    var medKeys = [], consultaIds = [], fisioIds = [];
+    PERIODOS.forEach(function (cod) {
+      renderPeriodo(cod, json.periodos[cod], medKeys, consultaIds, fisioIds);
+    });
+    medKeysHidden.value = medKeys.join(',');
+    consultaIdsHidden.value = consultaIds.join(',');
+    fisioIdsHidden.value = fisioIds.join(',');
+  }
+
+  function carregar() {
+    var idoso = idosoSel.value, data = dataInp.value;
+    if (!idoso || !data) { mostrarMensagem('vazio'); vazio.textContent = 'Selecione o idoso e a data para ver as atividades programadas.'; return; }
+    vazio.textContent = 'Nenhuma atividade personalizada programada para este idoso nesta data.';
+    fetch('{% url "atividades:atividades_do_dia" %}?idoso=' + encodeURIComponent(idoso) + '&data=' + encodeURIComponent(data))
+      .then(function (r) {
+        if (!r.ok) throw new Error('resposta ' + r.status);
+        var tipo = r.headers.get('content-type') || '';
+        if (tipo.indexOf('application/json') === -1) throw new Error('resposta nao-JSON (sessao expirada?)');
+        return r.json();
+      })
+      .then(function (json) { render(json); })
+      .catch(function (e) { console.error('Falha ao carregar atividades do dia:', e); mostrarMensagem('erro'); });
+  }
+
+  idosoSel.addEventListener('change', carregar);
+  dataInp.addEventListener('change', carregar);
+  carregar(); // já carrega se idoso/data vierem preenchidos (edição)
+})();
+</script>
+{% endblock %}

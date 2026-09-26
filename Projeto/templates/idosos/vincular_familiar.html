@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}Vincular Familiar – {{ idoso.nome }}{% endblock %}
+{% block page_title %}Vincular Familiar{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'idosos:detalhe' idoso.pk %}" class="btn btn-sm btn-outline-secondary">
+  <i class="bi bi-arrow-left me-1"></i>Voltar para {{ idoso.nome }}
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <!-- Info do Idoso -->
+  <div class="col-12">
+    <div class="stat-card" style="background:linear-gradient(135deg,#E8F5E9,#fff);border-left:4px solid #2E7D32;">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#2E7D32;color:#fff;"><i class="bi bi-person-heart-fill"></i></div>
+        <div>
+          <div style="font-weight:700;font-size:1rem;color:#1B2A1E;">{{ idoso.nome }}</div>
+          <div style="font-size:.85rem;color:#6B7280;">{{ idoso.idade }} anos · Quarto {{ idoso.numero_quarto|default:"–" }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Familiares já vinculados -->
+  {% if familiares_existentes %}
+  <div class="col-12">
+    <div class="table-card">
+      <div class="px-3 py-2 border-bottom" style="font-weight:600;font-size:.9rem;">
+        <i class="bi bi-people me-2" style="color:#2E7D32;"></i>Familiares já vinculados
+      </div>
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Nome</th><th>Login</th><th>Parentesco</th><th>Contato Principal</th></tr></thead>
+        <tbody>
+          {% for v in familiares_existentes %}
+          <tr>
+            <td>{{ v.familiar.get_full_name }}</td>
+            <td><code>{{ v.familiar.username }}</code></td>
+            <td>{{ v.parentesco }}</td>
+            <td>{% if v.contato_principal %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Tabs para criar / vincular -->
+  <div class="col-12">
+    <div class="form-card">
+      <ul class="nav nav-tabs mb-4" id="tabFamiliar">
+        <li class="nav-item">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-criar">
+            <i class="bi bi-person-plus me-2"></i>Criar novo familiar
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-vincular">
+            <i class="bi bi-person-check me-2"></i>Vincular familiar existente
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- Criar novo familiar -->
+        <div class="tab-pane fade show active" id="tab-criar">
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="acao" value="criar">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">{{ form_criar.first_name.label }} <span class="text-danger">*</span></label>
+                {{ form_criar.first_name }}
+                {% if form_criar.first_name.errors %}<div class="text-danger small mt-1">{{ form_criar.first_name.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ form_criar.last_name.label }} <span class="text-danger">*</span></label>
+                {{ form_criar.last_name }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ form_criar.username.label }} <span class="text-danger">*</span></label>
+                {{ form_criar.username }}
+                <div class="form-text">Será usado para fazer login no sistema.</div>
+                {% if form_criar.username.errors %}<div class="text-danger small mt-1">{{ form_criar.username.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ form_criar.email.label }} <span class="text-danger">*</span></label>
+                {{ form_criar.email }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ form_criar.cpf.label }}</label>
+                {{ form_criar.cpf }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ form_criar.telefone.label }}</label>
+                {{ form_criar.telefone }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ form_criar.parentesco.label }} <span class="text-danger">*</span></label>
+                {{ form_criar.parentesco }}
+              </div>
+              <div class="col-md-6 d-flex align-items-center gap-2 mt-4">
+                {{ form_criar.contato_principal }}
+                <label class="form-check-label form-label mb-0">{{ form_criar.contato_principal.label }}</label>
+              </div>
+            </div>
+            <div class="alert mt-3" style="background:#E3F2FD;border-left:4px solid #1565C0;color:#0D47A1;font-size:.85rem;">
+              <i class="bi bi-info-circle me-2"></i>O familiar definirá a própria senha no primeiro acesso ao sistema.
+            </div>
+            <div class="d-flex gap-2 justify-content-end mt-3">
+              <button type="submit" name="acao" value="pular" class="btn btn-outline-secondary">Pular por agora</button>
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-person-plus me-1"></i>Criar e vincular familiar
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Vincular familiar existente -->
+        <div class="tab-pane fade" id="tab-vincular">
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="acao" value="vincular">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">{{ form_vincular.familiar.label }} <span class="text-danger">*</span></label>
+                {{ form_vincular.familiar }}
+                {% if form_vincular.familiar.errors %}<div class="text-danger small mt-1">{{ form_vincular.familiar.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ form_vincular.parentesco.label }} <span class="text-danger">*</span></label>
+                {{ form_vincular.parentesco }}
+              </div>
+              <div class="col-12 d-flex align-items-center gap-2">
+                {{ form_vincular.contato_principal }}
+                <label class="form-check-label form-label mb-0">{{ form_vincular.contato_principal.label }}</label>
+              </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-end mt-3">
+              <button type="submit" name="acao" value="pular" class="btn btn-outline-secondary">Pular por agora</button>
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-person-check me-1"></i>Vincular familiar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

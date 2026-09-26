@@ -1,0 +1,9 @@
+{% if form.errors %}
+<div class="alert alert-danger">
+  <strong><i class="bi bi-exclamation-triangle me-1"></i>Não foi possível salvar. Verifique:</strong>
+  <ul class="mb-0 mt-1">
+    {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+    {% for field in form %}{% for e in field.errors %}<li>{{ field.label }}: {{ e }}</li>{% endfor %}{% endfor %}
+  </ul>
+</div>
+{% endif %}

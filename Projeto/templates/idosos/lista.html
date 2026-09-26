@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Idosos{% endblock %}{% block page_title %}Idosos{% endblock %}
+{% block topbar_actions %}{% if not user.is_familiar %}<a href="{% url 'idosos:novo' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Novo Idoso</a>{% endif %}{% endblock %}
+{% block content %}
+<div class="table-card">
+  <div class="px-3 py-2 border-bottom">
+    <form class="d-flex gap-2" method="get">
+      <div class="input-group input-group-sm" style="max-width:300px;"><span class="input-group-text"><i class="bi bi-search"></i></span><input type="text" name="q" class="form-control" placeholder="Buscar..." value="{{ q }}"></div>
+      <select name="status" class="form-select form-select-sm" style="max-width:130px;" onchange="this.form.submit()"><option value="">Todos</option><option value="ativo" {% if status_filtro == "ativo" %}selected{% endif %}>Ativo</option><option value="inativo" {% if status_filtro == "inativo" %}selected{% endif %}>Inativo</option></select>
+    </form>
+  </div>
+  <table class="table table-hover"><thead><tr><th>Nome</th><th>Idade</th><th>Quarto</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for i in idosos %}<tr>
+    <td><div style="font-weight:500;">{{ i.nome }}</div><small class="text-muted">{{ i.data_nascimento|date:"d/m/Y" }}</small></td>
+    <td>{{ i.idade }} anos</td><td>{{ i.numero_quarto|default:"–" }}</td>
+    <td><span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.75rem;">{{ i.get_status_display }}</span></td>
+    <td class="text-end"><a href="{% url 'idosos:detalhe' i.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>{% if not user.is_familiar %}<a href="{% url 'idosos:editar' i.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>{% endif %}</td>
+  </tr>{% empty %}<tr><td colspan="5" class="text-center py-4 text-muted">Nenhum idoso encontrado.</td></tr>{% endfor %}</tbody></table>
+</div>{% endblock %}

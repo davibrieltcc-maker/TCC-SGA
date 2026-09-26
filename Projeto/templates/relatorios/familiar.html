@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}Relatório do Familiar – AsiloGest{% endblock %}
+{% block page_title %}Relatório do Familiar{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'relatorios:familiar' %}?pdf=1&inicio={{ inicio }}&fim={{ fim }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-pdf me-1"></i>Exportar PDF</a>
+{% endblock %}
+
+{% block content %}
+<div class="form-card mb-3">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-auto"><label class="form-label" style="font-size:.8rem;">De</label>
+      <input type="date" name="inicio" value="{{ inicio }}" class="form-control form-control-sm"></div>
+    <div class="col-auto"><label class="form-label" style="font-size:.8rem;">Até</label>
+      <input type="date" name="fim" value="{{ fim }}" class="form-control form-control-sm"></div>
+    <div class="col-auto"><button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-funnel me-1"></i>Filtrar</button></div>
+  </form>
+</div>
+
+{% for idoso in idosos %}
+<div class="mb-4">
+  <h5 style="font-weight:700;color:#1B2A1E;border-bottom:2px solid #E8F5E9;padding-bottom:.5rem;">
+    <i class="bi bi-person-heart me-2" style="color:#2E7D32;"></i>{{ idoso.nome }}
+    <small class="text-muted" style="font-size:.8rem;font-weight:400;">{{ idoso.idade }} anos · Quarto {{ idoso.numero_quarto|default:"–" }}</small>
+  </h5>
+
+  <div class="row g-3">
+    <!-- Consultas -->
+    <div class="col-12 col-md-6">
+      <div class="table-card">
+        <div class="px-3 py-2 border-bottom" style="font-weight:600;font-size:.875rem;"><i class="bi bi-clipboard2-pulse me-2" style="color:#6A1B9A;"></i>Consultas</div>
+        <table class="table table-hover mb-0">
+          <tbody>
+            {% for c in consultas %}{% if c.idoso.id == idoso.id %}
+            <tr>
+              <td style="font-size:.82rem;">{{ c.data_hora|date:"d/m/Y" }}</td>
+              <td><span class="badge bg-secondary" style="font-size:.7rem;">{{ c.get_tipo_display }}</span></td>
+              <td style="font-size:.82rem;">{{ c.get_status_display }}</td>
+              <td><a href="{% url 'consultas:detalhe' c.pk %}" class="btn btn-sm btn-outline-secondary" style="font-size:.7rem;"><i class="bi bi-eye"></i></a></td>
+            </tr>
+            {% endif %}{% empty %}{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Medicamentos administrados -->
+    <div class="col-12 col-md-6">
+      <div class="table-card">
+        <div class="px-3 py-2 border-bottom" style="font-weight:600;font-size:.875rem;"><i class="bi bi-capsule me-2" style="color:#C62828;"></i>Medicamentos Administrados</div>
+        <table class="table table-hover mb-0">
+          <tbody>
+            {% for a in administracoes %}{% if a.prescricao.idoso.id == idoso.id %}
+            <tr>
+              <td style="font-size:.82rem;">{{ a.data_hora|date:"d/m H:i" }}</td>
+              <td style="font-size:.82rem;">{{ a.prescricao.medicamento.nome }}</td>
+              <td><span class="badge" style="font-size:.7rem;{% if a.status == 'administrado' %}background:#E8F5E9;color:#2E7D32{% else %}background:#FFEBEE;color:#C62828{% endif %}">{{ a.get_status_display }}</span></td>
+            </tr>
+            {% endif %}{% empty %}{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Fisioterapia -->
+    <div class="col-12 col-md-6">
+      <div class="table-card">
+        <div class="px-3 py-2 border-bottom" style="font-weight:600;font-size:.875rem;"><i class="bi bi-activity me-2" style="color:#2E7D32;"></i>Fisioterapia</div>
+        <table class="table table-hover mb-0">
+          <tbody>
+            {% for s in sessoes %}{% if s.idoso.id == idoso.id %}
+            <tr>
+              <td style="font-size:.82rem;">{{ s.data_hora|date:"d/m/Y" }}</td>
+              <td style="font-size:.82rem;">{{ s.objetivo|truncatechars:30|default:"Sessão" }}</td>
+              <td><span class="badge" style="font-size:.7rem;{% if s.status == 'realizada' %}background:#E8F5E9;color:#2E7D32{% else %}background:#E3F2FD;color:#1565C0{% endif %}">{{ s.get_status_display }}</span></td>
+            </tr>
+            {% endif %}{% empty %}{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Atividades -->
+    <div class="col-12 col-md-6">
+      <div class="table-card">
+        <div class="px-3 py-2 border-bottom" style="font-weight:600;font-size:.875rem;"><i class="bi bi-calendar2-check me-2" style="color:#1565C0;"></i>Atividades Diárias</div>
+        <table class="table table-hover mb-0">
+          <tbody>
+            {% for r in rotinas %}{% if r.idoso.id == idoso.id %}{% for p in r.periodos.all %}
+            <tr>
+              <td style="font-size:.82rem;">{{ r.data|date:"d/m/Y" }}</td>
+              <td style="font-size:.82rem;">{{ p.get_periodo_display }}</td>
+              <td style="font-size:.8rem;">
+                {% if p.banho_realizado %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.68rem;">Banho</span> {% endif %}
+                {% if p.refeicoes_realizadas %}<span class="badge" style="background:#E3F2FD;color:#1565C0;font-size:.68rem;">{{ p.get_aceitacao_alimentar_display|default:p.refeicoes_realizadas }}</span>{% endif %}
+              </td>
+            </tr>
+            {% endfor %}{% endif %}{% empty %}{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% empty %}
+<div class="form-card text-center py-4 text-muted">Nenhum familiar vinculado à sua conta.</div>
+{% endfor %}
+{% endblock %}

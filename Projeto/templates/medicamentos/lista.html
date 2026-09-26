@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Medicamentos{% endblock %}{% block page_title %}Medicamentos{% endblock %}
+{% block topbar_actions %}<a href="{% url 'medicamentos:novo' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Novo</a>{% endblock %}
+{% block content %}
+{% if alertas %}<div class="alert alert-danger mb-3"><i class="bi bi-exclamation-triangle me-2"></i><strong>Estoque baixo:</strong> {% for m in alertas %}{{ m.nome }} ({{ m.estoque_atual }} {{ m.unidade }}){% if not forloop.last %}, {% endif %}{% endfor %}</div>{% endif %}
+<div class="table-card"><table class="table table-hover">
+<thead><tr><th>Medicamento</th><th>Princípio Ativo</th><th>Forma</th><th>Estoque</th><th></th></tr></thead>
+<tbody>{% for m in medicamentos %}<tr>
+  <td><div style="font-weight:500;">{{ m.nome }}</div><small class="text-muted">{{ m.fabricante }}</small></td>
+  <td style="font-size:.875rem;">{{ m.principio_ativo|default:"–" }}</td>
+  <td style="font-size:.875rem;">{{ m.forma|default:"–" }}</td>
+  <td>
+    {% if m.estoque_baixo %}<span class="badge" style="background:#FFEBEE;color:#C62828;">{{ m.estoque_atual }} {{ m.unidade }} ⚠</span>
+    {% else %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;">{{ m.estoque_atual }} {{ m.unidade }}</span>{% endif %}
+  </td>
+  <td class="text-end"><a href="{% url 'medicamentos:detalhe' m.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a><a href="{% url 'medicamentos:editar' m.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a></td>
+</tr>{% empty %}<tr><td colspan="5" class="text-center py-4 text-muted">Nenhum medicamento cadastrado.</td></tr>{% endfor %}</tbody>
+</table></div>{% endblock %}

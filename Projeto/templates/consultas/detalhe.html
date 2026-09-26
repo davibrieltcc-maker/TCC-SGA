@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Consulta{% endblock %}{% block page_title %}Detalhes da Consulta{% endblock %}
+{% block topbar_actions %}{% if user.pode_editar_saude %}<a href="{% url 'consultas:editar' consulta.pk %}" class="btn btn-primary btn-sm"><i class="bi bi-pencil me-1"></i>Editar</a>{% endif %}{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-lg-9"><div class="form-card">
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h5 class="mb-1">{{ consulta.idoso.nome }}</h5>
+    <small class="text-muted">{{ consulta.data_hora|date:"d/m/Y H:i" }} &bull; Dr. {{ consulta.medico.get_full_name|default:"–" }}</small>
+  </div>
+  <span class="badge" style="background:#E3F2FD;color:#1565C0;">{{ consulta.get_tipo_display }}</span>
+</div><hr>
+<dl class="row mb-0" style="font-size:.9rem;">
+  <dt class="col-3 text-muted">Queixa</dt><dd class="col-9" style="white-space:pre-line;">{{ consulta.queixa_principal|default:"–" }}</dd>
+  <dt class="col-3 text-muted">Anamnese</dt><dd class="col-9" style="white-space:pre-line;">{{ consulta.anamnese|default:"–" }}</dd>
+  <dt class="col-3 text-muted">Exame Físico</dt><dd class="col-9" style="white-space:pre-line;">{{ consulta.exame_fisico|default:"–" }}</dd>
+  <dt class="col-3 text-muted">Diagnóstico</dt><dd class="col-9" style="white-space:pre-line;">{{ consulta.diagnostico|default:"–" }}</dd>
+  <dt class="col-3 text-muted">Prescrição</dt><dd class="col-9" style="white-space:pre-line;">{{ consulta.prescricao|default:"–" }}</dd>
+  <dt class="col-3 text-muted">Retorno</dt><dd class="col-9">{{ consulta.retorno_em|date:"d/m/Y"|default:"Não definido" }}</dd>
+</dl>
+</div></div></div>{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Excluir Sessão{% endblock %}{% block page_title %}Excluir Sessão{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-md-5"><div class="form-card text-center">
+<i class="bi bi-exclamation-triangle-fill text-danger" style="font-size:3rem;"></i>
+<h5 class="mt-3">Excluir sessão de {{ sessao.idoso.nome }}?</h5>
+<p class="text-muted">{{ sessao.data_hora|date:"d/m/Y H:i" }}</p>
+<form method="post">{% csrf_token %}
+<div class="d-flex gap-2 justify-content-center">
+<button type="submit" class="btn btn-danger">Sim, excluir</button>
+<a href="{% url 'fisioterapia:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+</div></form></div></div></div>{% endblock %}

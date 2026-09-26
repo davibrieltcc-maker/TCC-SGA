@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Sessão – {{ sessao.idoso.nome }}{% endblock %}{% block page_title %}Sessão de Fisioterapia{% endblock %}
+{% block topbar_actions %}<a href="{% url 'fisioterapia:editar' sessao.pk %}" class="btn btn-primary btn-sm"><i class="bi bi-pencil me-1"></i>Editar</a>{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-8"><div class="form-card">
+  <dl class="row mb-0" style="font-size:.9rem;">
+    <dt class="col-4 text-muted">Idoso</dt><dd class="col-8"><a href="{% url 'idosos:detalhe' sessao.idoso.pk %}">{{ sessao.idoso.nome }}</a></dd>
+    <dt class="col-4 text-muted">Fisioterapeuta</dt><dd class="col-8">{{ sessao.fisioterapeuta.get_full_name|default:"–" }}</dd>
+    <dt class="col-4 text-muted">Data/Hora</dt><dd class="col-8">{{ sessao.data_hora|date:"d/m/Y H:i" }}</dd>
+    <dt class="col-4 text-muted">Duração</dt><dd class="col-8">{{ sessao.duracao_minutos }} minutos</dd>
+    <dt class="col-4 text-muted">Status</dt><dd class="col-8">{{ sessao.get_status_display }}</dd>
+    <dt class="col-4 text-muted">Objetivo</dt><dd class="col-8">{{ sessao.objetivo|default:"–" }}</dd>
+    <dt class="col-4 text-muted">Procedimentos</dt><dd class="col-8" style="white-space:pre-line;">{{ sessao.procedimentos|default:"–" }}</dd>
+    <dt class="col-4 text-muted">Evolução</dt><dd class="col-8" style="white-space:pre-line;">{{ sessao.evolucao|default:"–" }}</dd>
+    <dt class="col-4 text-muted">Observações</dt><dd class="col-8" style="white-space:pre-line;">{{ sessao.observacoes|default:"–" }}</dd>
+  </dl>
+</div></div></div>{% endblock %}

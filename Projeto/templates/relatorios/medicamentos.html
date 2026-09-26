@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Relatório de Medicamentos{% endblock %}{% block page_title %}Controle de Medicamentos{% endblock %}
+{% block content %}
+{% if alertas %}
+<div class="alert alert-danger mb-3"><strong><i class="bi bi-exclamation-triangle me-2"></i>Estoque Crítico:</strong>
+  <ul class="mb-0 mt-1">{% for m in alertas %}<li>{{ m.nome }} – {{ m.estoque_atual }} {{ m.unidade }} (mín: {{ m.estoque_minimo }})</li>{% endfor %}</ul>
+</div>{% endif %}
+<div class="table-card mt-3">
+  <div class="px-3 py-2 border-bottom" style="font-weight:600;font-size:.9rem;"><i class="bi bi-clock-history me-2" style="color:#2E7D32;"></i>Administrações – Últimos 30 dias</div>
+  <table class="table table-hover">
+  <thead><tr><th>Idoso</th><th>Medicamento</th><th>Dose</th><th>Data/Hora</th><th>Responsável</th><th>Status</th></tr></thead>
+  <tbody>{% for r in registros %}<tr>
+    <td style="font-size:.875rem;">{{ r.prescricao.idoso.nome }}</td>
+    <td style="font-size:.875rem;">{{ r.prescricao.medicamento.nome }}</td>
+    <td style="font-size:.875rem;">{{ r.prescricao.dose }}</td>
+    <td style="font-size:.875rem;">{{ r.data_hora|date:"d/m/Y H:i" }}</td>
+    <td style="font-size:.875rem;">{{ r.administrado_por.get_full_name|default:"–" }}</td>
+    <td>
+      {% if r.status == 'administrado' %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.75rem;">Administrado</span>
+      {% else %}<span class="badge bg-secondary" style="font-size:.75rem;">{{ r.get_status_display }}</span>{% endif %}
+    </td>
+  </tr>{% empty %}<tr><td colspan="6" class="text-center py-4 text-muted">Nenhum registro no período.</td></tr>{% endfor %}</tbody>
+  </table>
+</div>{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Relatório de Idosos{% endblock %}{% block page_title %}Relatório de Idosos{% endblock %}
+{% block content %}
+<div class="table-card"><table class="table table-hover" id="tabela">
+<thead><tr><th>Nome</th><th>Idade</th><th>Sexo</th><th>Tipo Sang.</th><th>Quarto</th><th>Entrada</th><th>Status</th></tr></thead>
+<tbody>{% for i in idosos %}<tr>
+  <td>{{ i.nome }}</td><td>{{ i.idade }} anos</td><td>{{ i.get_sexo_display }}</td>
+  <td>{{ i.tipo_sanguineo|default:"–" }}</td><td>{{ i.numero_quarto|default:"–" }}</td>
+  <td>{{ i.data_entrada|date:"d/m/Y" }}</td>
+  <td><span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.75rem;">{{ i.get_status_display }}</span></td>
+</tr>{% empty %}<tr><td colspan="7" class="text-center py-4 text-muted">Nenhum registro.</td></tr>{% endfor %}</tbody>
+</table></div>
+<div class="mt-3 text-muted" style="font-size:.8rem;">Total: {{ idosos|length }} idoso(s) &bull; Gerado em {% now "d/m/Y H:i" %}</div>{% endblock %}

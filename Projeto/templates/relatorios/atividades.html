@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Relatório de Atividades – AsiloGest{% endblock %}
+{% block page_title %}Relatório de Atividades Diárias{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'relatorios:atividades' %}?pdf=1&data={{ data_filtro }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-pdf me-1"></i>Exportar PDF</a>
+<a href="{% url 'relatorios:lista' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Voltar</a>
+{% endblock %}
+
+{% block content %}
+<div class="form-card mb-3">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-auto">
+      <label class="form-label" style="font-size:.8rem;">Data</label>
+      <input type="date" name="data" value="{{ data_filtro }}" class="form-control form-control-sm">
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+    </div>
+  </form>
+</div>
+
+<div class="table-card">
+  <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+    <span style="font-weight:600;font-size:.9rem;"><i class="bi bi-calendar2-check me-2" style="color:#1565C0;"></i>Rotinas do dia {{ data_filtro|date:"d/m/Y" }}</span>
+    <span class="badge bg-secondary">{{ rotinas|length }} registro(s)</span>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr><th>Idoso</th><th>Período</th><th>Higienização</th><th>Alimentação</th><th>Aceitação</th><th>Responsável</th></tr>
+    </thead>
+    <tbody>
+      {% for r in rotinas %}
+      {% for p in r.periodos.all %}
+      <tr>
+        <td style="font-weight:500;font-size:.875rem;">{{ r.idoso.nome }}</td>
+        <td>{{ p.get_periodo_display }}</td>
+        <td style="font-size:.82rem;">
+          {% if p.banho_realizado %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.7rem;">Banho</span> {% endif %}
+          {% if p.higiene_oral %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.7rem;">Higiene</span> {% endif %}
+          {% if p.troca_roupa %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.7rem;">Roupa</span> {% endif %}
+          {% if p.curativo %}<span class="badge" style="background:#FFF3E0;color:#E65100;font-size:.7rem;">Curativo</span> {% endif %}
+          {% if not p.banho_realizado and not p.higiene_oral and not p.troca_roupa and not p.curativo %}–{% endif %}
+        </td>
+        <td style="font-size:.82rem;">{{ p.refeicoes_realizadas|default:"–" }}</td>
+        <td>
+          {% if p.aceitacao_alimentar %}
+          <span class="badge" style="font-size:.72rem;{% if p.aceitacao_alimentar == 'total' %}background:#E8F5E9;color:#2E7D32{% elif p.aceitacao_alimentar == 'parcial' %}background:#FFF3E0;color:#E65100{% else %}background:#FFEBEE;color:#C62828{% endif %}">
+            {{ p.get_aceitacao_alimentar_display }}
+          </span>
+          {% else %}–{% endif %}
+        </td>
+        <td style="font-size:.82rem;">{{ p.responsavel.get_full_name|default:"–" }}</td>
+      </tr>
+      {% endfor %}
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted py-4">Nenhuma rotina registrada para esta data.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

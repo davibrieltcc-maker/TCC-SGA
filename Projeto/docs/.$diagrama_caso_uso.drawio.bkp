@@ -1,0 +1,149 @@
+<mxfile host="app.diagrams.net" agent="Claude Code" version="24.7.0" type="device">
+  <diagram id="useCaseDiagramAsilo" name="Diagrama de Caso de Uso">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1150" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===================== LIMITE DO SISTEMA ===================== -->
+        <mxCell id="boundary_system" value="Sistema de Gerenciamento do Asilo" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontStyle=1;fontSize=13;fillColor=none;strokeColor=#666666;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="260" y="40" width="650" height="650" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== ATORES (esquerda) ===================== -->
+        <mxCell id="actor_admin" value="Administrador" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="50" y="130" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_recep" value="Recepcionista" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="50" y="330" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_enf" value="Enfermeiro(a)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="50" y="530" width="30" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== ATORES (direita) ===================== -->
+        <mxCell id="actor_medico" value="Médico" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="990" y="130" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_fisio" value="Fisioterapeuta" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="990" y="330" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_familiar" value="Familiar" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="990" y="530" width="30" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== CASOS DE USO ===================== -->
+        <mxCell id="uc_login" value="Autenticar-se" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="330" y="70" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_usuarios" value="Gerenciar Usuários" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="70" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_idosos" value="Gerenciar Idosos" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="330" y="190" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_rotina" value="Registrar Rotina Diária" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="190" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_consultas" value="Gerenciar Consultas" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="330" y="310" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_prescrever" value="Prescrever Medicamento" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="310" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_administrar_med" value="Registrar Administração de Medicamento" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="330" y="430" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_fisio_sessoes" value="Gerenciar Sessões de Fisioterapia" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="430" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_autorizar_fisio" value="Autorizar Sessão de Fisioterapia" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="330" y="560" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_relatorios" value="Visualizar Relatórios" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="560" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== ASSOCIAÇÕES ATOR - CASO DE USO ===================== -->
+        <mxCell id="a1" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_admin" target="uc_login">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_recep" target="uc_login">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_enf" target="uc_login">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_medico" target="uc_login">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_fisio" target="uc_login">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a6" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_familiar" target="uc_login">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a7" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_admin" target="uc_usuarios">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a8" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_admin" target="uc_idosos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a9" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_recep" target="uc_idosos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a10" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_enf" target="uc_rotina">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a11" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_medico" target="uc_consultas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a12" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_recep" target="uc_consultas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a13" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_medico" target="uc_prescrever">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a14" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_enf" target="uc_administrar_med">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a15" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_fisio" target="uc_fisio_sessoes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a16" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_medico" target="uc_autorizar_fisio">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a17" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_admin" target="uc_relatorios">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a18" style="html=1;endArrow=none;startArrow=none;fontSize=10;" edge="1" parent="1" source="actor_familiar" target="uc_relatorios">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== RELAÇÃO ENTRE CASOS DE USO ===================== -->
+        <mxCell id="ext1" value="&amp;laquo;extend&amp;raquo;" style="html=1;endArrow=open;endFill=0;dashed=1;fontSize=10;" edge="1" parent="1" source="uc_autorizar_fisio" target="uc_fisio_sessoes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

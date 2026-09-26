@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}{% block page_title %}{{ titulo }}{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-lg-9"><div class="form-card">
+<form method="post">{% csrf_token %}
+{% include '_form_errors.html' %}
+<div class="row g-3">
+  <div class="col-md-6"><label class="form-label">Idoso</label>{{ form.idoso }}</div>
+  <div class="col-md-6"><label class="form-label">Médico</label>{{ form.medico }}</div>
+  <div class="col-md-6"><label class="form-label">Data e Hora</label>{{ form.data_hora }}</div>
+  <div class="col-md-3"><label class="form-label">Tipo</label>{{ form.tipo }}</div>
+  <div class="col-md-3"><label class="form-label">Status</label>{{ form.status }}</div>
+  <div class="col-12"><hr><label class="form-label">Queixa Principal</label>{{ form.queixa_principal }}</div>
+  <div class="col-12"><label class="form-label">Anamnese</label>{{ form.anamnese }}</div>
+  <div class="col-12"><label class="form-label">Exame Físico</label>{{ form.exame_fisico }}</div>
+  <div class="col-12"><label class="form-label">Diagnóstico</label>{{ form.diagnostico }}</div>
+  <div class="col-12"><label class="form-label">Prescrição / Conduta</label>{{ form.prescricao }}</div>
+  <div class="col-md-4"><label class="form-label">Retorno Previsto</label>{{ form.retorno_em }}</div>
+  <div class="col-12"><label class="form-label">Observações</label>{{ form.observacoes }}</div>
+  <div class="col-12 d-flex gap-2 pt-2">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Salvar</button>
+    <a href="{% url 'consultas:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</div></form></div></div></div>{% endblock %}

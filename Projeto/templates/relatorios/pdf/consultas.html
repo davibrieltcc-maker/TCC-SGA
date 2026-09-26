@@ -1,0 +1,24 @@
+{% extends 'relatorios/pdf/base_pdf.html' %}
+{% block meta %}Consultas de {{ inicio }} a {{ fim }}{% endblock %}
+{% block content %}
+<h1>Relatório de Consultas</h1>
+<p style="font-size:10px;color:#6B7280;">Período: {{ inicio }} a {{ fim }}</p>
+<table>
+  <thead><tr><th>Data</th><th>Idoso</th><th>Tipo</th><th>Médico</th><th>Status</th><th>Diagnóstico</th></tr></thead>
+  <tbody>
+    {% for c in consultas %}
+    <tr>
+      <td>{{ c.data_hora|date:"d/m/Y" }}</td>
+      <td>{{ c.idoso.nome }}</td>
+      <td>{{ c.get_tipo_display }}</td>
+      <td>{{ c.medico.get_full_name|default:"–" }}</td>
+      <td><span class="badge {% if c.status == 'realizada' %}badge-ok{% elif c.status == 'agendada' %}badge-info{% else %}badge-danger{% endif %}">{{ c.get_status_display }}</span></td>
+      <td>{{ c.diagnostico|truncatechars:60|default:"–" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">Nenhuma consulta no período.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p style="font-size:10px;color:#6B7280;">Total: {{ consultas|length }} consulta(s).</p>
+{% endblock %}

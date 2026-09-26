@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Atividades Diárias{% endblock %}{% block page_title %}Atividades Diárias{% endblock %}
+{% block topbar_actions %}<a href="{% url 'atividades:novo' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Registrar Rotina</a>{% endblock %}
+{% block content %}
+<div class="table-card mb-3 p-3">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-6 col-md-3">
+      <label class="form-label small mb-1">Data</label>
+      <input type="date" name="data" class="form-control form-control-sm" value="{{ data_filtro }}">
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label small mb-1">Idoso</label>
+      <select name="idoso" class="form-select form-select-sm">
+        <option value="">Todos</option>
+        {% for i in idosos_filtro %}
+        <option value="{{ i.pk }}" {% if idoso_filtro == i.pk|stringformat:"s" %}selected{% endif %}>{{ i.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label small mb-1">Ordenar por</label>
+      <select name="ordenar" class="form-select form-select-sm">
+        <option value="recentes" {% if ordenar_filtro == 'recentes' %}selected{% endif %}>Mais recentes primeiro</option>
+        <option value="antigas" {% if ordenar_filtro == 'antigas' %}selected{% endif %}>Mais antigas primeiro</option>
+        <option value="nome_asc" {% if ordenar_filtro == 'nome_asc' %}selected{% endif %}>Nome do idoso (A-Z)</option>
+        <option value="nome_desc" {% if ordenar_filtro == 'nome_desc' %}selected{% endif %}>Nome do idoso (Z-A)</option>
+      </select>
+    </div>
+    <div class="col-12 col-md-3 d-flex gap-2">
+      <button class="btn btn-sm btn-primary flex-grow-1">Filtrar</button>
+      <a href="{% url 'atividades:lista' %}" class="btn btn-sm btn-outline-secondary" title="Limpar filtros"><i class="bi bi-x-lg"></i></a>
+    </div>
+  </form>
+</div>
+<div class="table-card"><table class="table table-hover">
+<thead><tr><th>Idoso</th><th>Data</th><th>Manhã</th><th>Tarde</th><th>Noite</th><th>Atividades</th><th></th></tr></thead>
+<tbody>{% for r in rotinas %}<tr>
+  <td><div style="font-weight:500;">{{ r.idoso.nome }}</div></td>
+  <td style="font-size:.875rem;">{{ r.data|date:"d/m/Y" }}</td>
+  {% with periodos=r.periodos.all %}
+  <td style="font-size:.8rem;">
+    {% for p in periodos %}{% if p.periodo == 'manha' %}
+      {% if p.banho_realizado %}<span class="badge me-1" style="background:#E8F5E9;color:#2E7D32;">Banho ✓</span>{% endif %}
+      {% if p.higiene_oral %}<span class="badge me-1" style="background:#E8F5E9;color:#2E7D32;">Oral ✓</span>{% endif %}
+      {% if not p.banho_realizado and not p.higiene_oral %}<span class="text-muted">–</span>{% endif %}
+    {% endif %}{% endfor %}
+  </td>
+  <td style="font-size:.8rem;">
+    {% for p in periodos %}{% if p.periodo == 'tarde' %}
+      {% if p.banho_realizado %}<span class="badge me-1" style="background:#E8F5E9;color:#2E7D32;">Banho ✓</span>{% endif %}
+      {% if p.higiene_oral %}<span class="badge me-1" style="background:#E8F5E9;color:#2E7D32;">Oral ✓</span>{% endif %}
+      {% if not p.banho_realizado and not p.higiene_oral %}<span class="text-muted">–</span>{% endif %}
+    {% endif %}{% endfor %}
+  </td>
+  <td style="font-size:.8rem;">
+    {% for p in periodos %}{% if p.periodo == 'noite' %}
+      {% if p.banho_realizado %}<span class="badge me-1" style="background:#E8F5E9;color:#2E7D32;">Banho ✓</span>{% endif %}
+      {% if p.higiene_oral %}<span class="badge me-1" style="background:#E8F5E9;color:#2E7D32;">Oral ✓</span>{% endif %}
+      {% if not p.banho_realizado and not p.higiene_oral %}<span class="text-muted">–</span>{% endif %}
+    {% endif %}{% endfor %}
+  </td>
+  {% endwith %}
+  <td style="font-size:.75rem;">
+    {% for item in r.checklist_resumo %}
+      {% if item.registro_do_dia == None %}
+        <span class="badge me-1 mb-1" style="background:#FFF3E0;color:#E65100;" title="Ainda sem registro">{{ item.descricao }} ⏳</span>
+      {% elif item.registro_do_dia.realizado %}
+        <span class="badge me-1 mb-1" style="background:#E8F5E9;color:#2E7D32;">{{ item.descricao }} ✓</span>
+      {% else %}
+        <span class="badge me-1 mb-1" style="background:#FFEBEE;color:#C62828;">{{ item.descricao }} ✗</span>
+      {% endif %}
+    {% empty %}
+    <span class="text-muted">–</span>
+    {% endfor %}
+  </td>
+  <td class="text-end">
+    <a href="{% url 'atividades:detalhe' r.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+    <a href="{% url 'atividades:editar' r.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+  </td>
+</tr>{% empty %}<tr><td colspan="7" class="text-center py-4 text-muted">Nenhuma rotina registrada para este filtro.</td></tr>{% endfor %}</tbody>
+</table></div>{% endblock %}

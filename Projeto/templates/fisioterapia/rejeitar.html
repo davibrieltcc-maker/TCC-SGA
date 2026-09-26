@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block titulo %}Rejeitar Sessão{% endblock %}
+{% block conteudo %}
+<div class="container mt-4">
+  <div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+      <h5 class="mb-0"><i class="bi bi-x-circle"></i> Rejeitar Sessão de Fisioterapia</h5>
+    </div>
+    <div class="card-body">
+      <p><strong>Idoso:</strong> {{ sessao.idoso.nome }}</p>
+      <p><strong>Fisioterapeuta:</strong> {{ sessao.fisioterapeuta.get_full_name }}</p>
+      <p><strong>Data/Hora:</strong> {{ sessao.data_hora|date:"d/m/Y H:i" }}</p>
+      <p class="text-danger"><i class="bi bi-exclamation-triangle"></i> A sessão será cancelada.</p>
+      <form method="post">
+        {% csrf_token %}
+        <a href="{% url 'fisioterapia:lista' %}" class="btn btn-secondary">Voltar</a>
+        <button type="submit" class="btn btn-danger">Rejeitar Sessão</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

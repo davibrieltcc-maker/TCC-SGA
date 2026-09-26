@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Prontuário – {{ idoso.nome }}{% endblock %}
+{% block page_title %}Prontuário – {{ idoso.nome }}{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'idosos:detalhe' idoso.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Voltar</a>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-12">
+    <div class="stat-card" style="border-left:4px solid #2E7D32;">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#E8F5E9;color:#2E7D32;"><i class="bi bi-journal-medical-fill"></i></div>
+        <div>
+          <div style="font-weight:700;font-size:1rem;">{{ idoso.nome }}</div>
+          <div style="font-size:.85rem;color:#6B7280;">{{ idoso.idade }} anos · Tipo Sang.: {{ idoso.tipo_sanguineo|default:"–" }} · Entrada: {{ idoso.data_entrada|date:"d/m/Y" }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prontuário -->
+  <div class="col-12 col-lg-6">
+    <div class="form-card h-100">
+      <h6 style="font-weight:600;color:#2E7D32;border-bottom:2px solid #E8F5E9;padding-bottom:.5rem;margin-bottom:1rem;">
+        <i class="bi bi-clipboard2-heart me-2"></i>Histórico Clínico
+      </h6>
+      {% if not somente_leitura %}
+      <form method="post">
+        {% csrf_token %}
+        {% include '_form_errors.html' %}
+        <div class="mb-3">
+          <label class="form-label">{{ form.historico_pessoal.label }}</label>
+          {{ form.historico_pessoal }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">{{ form.historico_familiar.label }}</label>
+          {{ form.historico_familiar }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">{{ form.cirurgias_anteriores.label }}</label>
+          {{ form.cirurgias_anteriores }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">{{ form.vacinas.label }}</label>
+          {{ form.vacinas }}
+        </div>
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save me-1"></i>Salvar Prontuário</button>
+        </div>
+      </form>
+      {% else %}
+      <dl class="row mb-0" style="font-size:.875rem;">
+        <dt class="col-12 text-muted mb-1">Histórico Pessoal</dt>
+        <dd class="col-12 mb-3" style="white-space:pre-wrap;">{{ prontuario.historico_pessoal|default:"–" }}</dd>
+        <dt class="col-12 text-muted mb-1">Histórico Familiar</dt>
+        <dd class="col-12 mb-3" style="white-space:pre-wrap;">{{ prontuario.historico_familiar|default:"–" }}</dd>
+        <dt class="col-12 text-muted mb-1">Cirurgias Anteriores</dt>
+        <dd class="col-12 mb-3" style="white-space:pre-wrap;">{{ prontuario.cirurgias_anteriores|default:"–" }}</dd>
+        <dt class="col-12 text-muted mb-1">Vacinas</dt>
+        <dd class="col-12" style="white-space:pre-wrap;">{{ prontuario.vacinas|default:"–" }}</dd>
+      </dl>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Últimas consultas -->
+  <div class="col-12 col-lg-6">
+    <div class="table-card">
+      <div class="px-3 py-2 border-bottom" style="font-weight:600;font-size:.9rem;">
+        <i class="bi bi-clipboard2-pulse me-2" style="color:#6A1B9A;"></i>Histórico de Consultas
+      </div>
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Data</th><th>Tipo</th><th>Diagnóstico</th><th></th></tr></thead>
+        <tbody>
+          {% for c in consultas %}
+          <tr>
+            <td style="font-size:.82rem;">{{ c.data_hora|date:"d/m/Y" }}</td>
+            <td><span class="badge bg-secondary" style="font-size:.72rem;">{{ c.get_tipo_display }}</span></td>
+            <td style="font-size:.82rem;">{{ c.diagnostico|truncatechars:40|default:"–" }}</td>
+            <td><a href="{% url 'consultas:detalhe' c.pk %}" class="btn btn-sm btn-outline-secondary" style="font-size:.7rem;"><i class="bi bi-eye"></i></a></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="text-center text-muted py-3" style="font-size:.85rem;">Sem consultas registradas.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Alergias e condições -->
+    {% if idoso.alergias or idoso.condicoes_medicas %}
+    <div class="form-card mt-3">
+      <h6 style="font-weight:600;color:#C62828;margin-bottom:1rem;"><i class="bi bi-exclamation-triangle me-2"></i>Alertas Médicos</h6>
+      {% if idoso.alergias %}
+      <div class="p-2 mb-2" style="background:#FFEBEE;border-radius:8px;font-size:.875rem;">
+        <strong>Alergias:</strong> {{ idoso.alergias }}
+      </div>
+      {% endif %}
+      {% if idoso.condicoes_medicas %}
+      <div class="p-2" style="background:#FFF3E0;border-radius:8px;font-size:.875rem;">
+        <strong>Condições Médicas:</strong> {{ idoso.condicoes_medicas }}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

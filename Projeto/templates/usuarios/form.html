@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }} – AsiloGest{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'usuarios_lista' %}" class="btn btn-sm btn-outline-secondary">
+  <i class="bi bi-arrow-left me-1"></i>Voltar
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+    <div class="form-card">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <h6 class="mb-3" style="color:#2E7D32;font-weight:600;border-bottom:2px solid #E8F5E9;padding-bottom:.5rem;">
+              <i class="bi bi-person me-2"></i>Dados Pessoais
+            </h6>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">{{ form.first_name.label }} <span class="text-danger">*</span></label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">{{ form.last_name.label }} <span class="text-danger">*</span></label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
+          </div>
+          {% if form.username %}
+          <div class="col-md-6">
+            <label class="form-label">{{ form.username.label }} <span class="text-danger">*</span></label>
+            {{ form.username }}
+            <div class="form-text">Usado para fazer login no sistema.</div>
+            {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>{% endif %}
+          </div>
+          {% endif %}
+          <div class="col-md-6">
+            <label class="form-label">{{ form.email.label }} <span class="text-danger">*</span></label>
+            {{ form.email }}
+            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ form.cpf.label }}</label>
+            {{ form.cpf }}
+            {% if form.cpf.errors %}<div class="text-danger small mt-1">{{ form.cpf.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ form.telefone.label }}</label>
+            {{ form.telefone }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">{{ form.data_nascimento.label }}</label>
+            {{ form.data_nascimento }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">{{ form.foto.label }}</label>
+            {{ form.foto }}
+            {% if usuario and usuario.foto %}
+            <div class="mt-2"><img src="{{ usuario.foto.url }}" alt="Foto atual" style="width:60px;height:60px;object-fit:cover;border-radius:50%;"></div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <h6 class="mb-3" style="color:#2E7D32;font-weight:600;border-bottom:2px solid #E8F5E9;padding-bottom:.5rem;">
+              <i class="bi bi-shield-check me-2"></i>Acesso e Função
+            </h6>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">{{ form.perfil.label }} <span class="text-danger">*</span></label>
+            {{ form.perfil }}
+            {% if form.perfil.errors %}<div class="text-danger small mt-1">{{ form.perfil.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">{{ form.especialidade.label }}</label>
+            {{ form.especialidade }}
+            <div class="form-text">Preencha para Médico ou Fisioterapeuta.</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">{{ form.data_admissao.label }}</label>
+            {{ form.data_admissao }}
+          </div>
+          {% if form.ativo %}
+          <div class="col-md-6 d-flex align-items-center gap-2 mt-4">
+            {{ form.ativo }}
+            <label class="form-check-label form-label mb-0">{{ form.ativo.label }}</label>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if not usuario %}
+        <div class="alert" style="background:#E8F5E9;border-left:4px solid #2E7D32;color:#1B5E20;">
+          <i class="bi bi-info-circle me-2"></i>
+          <strong>Sem senha inicial:</strong> o usuário receberá acesso sem senha e deverá definir a própria senha no primeiro login.
+        </div>
+        {% endif %}
+
+        <div class="d-flex gap-2 justify-content-end mt-3">
+          <a href="{% url 'usuarios_lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-check-lg me-1"></i>{{ titulo }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

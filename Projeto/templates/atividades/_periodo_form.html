@@ -1,0 +1,35 @@
+{% if pform.errors %}
+<div class="alert alert-danger">
+  <ul class="mb-0">
+    {% for field in pform %}{% for e in field.errors %}<li>{{ field.label }}: {{ e }}</li>{% endfor %}{% endfor %}
+  </ul>
+</div>
+{% endif %}
+<div class="row g-3">
+  <div class="col-12"><h6 class="text-muted mb-2"><i class="bi bi-droplet me-2"></i>Higienização</h6></div>
+  <div class="col-md-3 d-flex align-items-center gap-2">{{ pform.banho_realizado }}<label class="form-check-label">Banho Realizado</label></div>
+  <div class="col-md-3 d-flex align-items-center gap-2">{{ pform.higiene_oral }}<label class="form-check-label">Higiene Oral</label></div>
+  <div class="col-md-3 d-flex align-items-center gap-2">{{ pform.troca_roupa }}<label class="form-check-label">Troca de Roupa</label></div>
+  <div class="col-md-3 d-flex align-items-center gap-2">{{ pform.curativo }}<label class="form-check-label">Curativo</label></div>
+  <div class="col-12"><label class="form-label">Obs. Higienização</label>{{ pform.obs_higiene }}</div>
+
+  <div class="col-12"><h6 class="text-muted mt-2 mb-2"><i class="bi bi-egg-fried me-2"></i>Alimentação</h6></div>
+  <div class="col-md-8"><label class="form-label">Refeições Realizadas</label>{{ pform.refeicoes_realizadas }}</div>
+  <div class="col-md-4"><label class="form-label">Aceitação Alimentar</label>{{ pform.aceitacao_alimentar }}</div>
+  <div class="col-12"><label class="form-label">Obs. Alimentação</label>{{ pform.obs_alimentacao }}</div>
+
+  <div class="col-12"><h6 class="text-muted mt-2 mb-2"><i class="bi bi-capsule me-2"></i>Medicamentos</h6></div>
+  <div class="col-12" id="med-{{ cod }}">
+    <p class="text-muted small mb-0">Selecione o idoso e a data para ver os medicamentos programados.</p>
+  </div>
+
+  <div class="col-12"><h6 class="text-muted mt-2 mb-2"><i class="bi bi-clipboard2-pulse me-2"></i>Consultas</h6></div>
+  <div class="col-12" id="consultas-{{ cod }}">
+    <p class="text-muted small mb-0">Selecione o idoso e a data para ver as consultas agendadas.</p>
+  </div>
+
+  <div class="col-12"><h6 class="text-muted mt-2 mb-2"><i class="bi bi-activity me-2"></i>Fisioterapia</h6></div>
+  <div class="col-12" id="fisio-{{ cod }}">
+    <p class="text-muted small mb-0">Selecione o idoso e a data para ver as sessões agendadas.</p>
+  </div>
+</div>

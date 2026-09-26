@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}{% block page_title %}{{ titulo }}{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-lg-7"><div class="form-card">
+<form method="post">{% csrf_token %}
+{% include '_form_errors.html' %}
+<div class="row g-3">
+  <div class="col-12"><label class="form-label">Nome do Medicamento</label>{{ form.nome }}</div>
+  <div class="col-md-6"><label class="form-label">Princípio Ativo</label>{{ form.principio_ativo }}</div>
+  <div class="col-md-6"><label class="form-label">Fabricante</label>{{ form.fabricante }}</div>
+  <div class="col-md-4"><label class="form-label">Forma</label>{{ form.forma }}</div>
+  <div class="col-md-4"><label class="form-label">Estoque Atual</label>{{ form.estoque_atual }}</div>
+  <div class="col-md-4"><label class="form-label">Estoque Mínimo</label>{{ form.estoque_minimo }}</div>
+  <div class="col-md-4"><label class="form-label">Unidade</label>{{ form.unidade }}</div>
+  <div class="col-12"><label class="form-label">Observações</label>{{ form.observacoes }}</div>
+  <div class="col-12 d-flex gap-2 pt-2">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Salvar</button>
+    <a href="{% url 'medicamentos:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</div></form></div></div></div>{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'relatorios/pdf/base_pdf.html' %}
+{% block meta %}Relatório do Familiar – {{ inicio }} a {{ fim }}{% endblock %}
+{% block content %}
+<h1>Relatório do Familiar</h1>
+<p style="font-size:10px;color:#6B7280;">Período: {{ inicio }} a {{ fim }}</p>
+{% for idoso in idosos %}
+<h2>{{ idoso.nome }} – {{ idoso.idade }} anos (Quarto {{ idoso.numero_quarto|default:"–" }})</h2>
+
+<h2 style="font-size:11px;">Consultas</h2>
+<table>
+  <thead><tr><th>Data</th><th>Tipo</th><th>Médico</th><th>Status</th><th>Diagnóstico</th></tr></thead>
+  <tbody>
+    {% for c in consultas %}{% if c.idoso.id == idoso.id %}
+    <tr>
+      <td>{{ c.data_hora|date:"d/m/Y" }}</td>
+      <td>{{ c.get_tipo_display }}</td>
+      <td>{{ c.medico.get_full_name|default:"–" }}</td>
+      <td>{{ c.get_status_display }}</td>
+      <td>{{ c.diagnostico|truncatechars:50|default:"–" }}</td>
+    </tr>
+    {% endif %}{% endfor %}
+  </tbody>
+</table>
+
+<h2 style="font-size:11px;">Medicamentos Administrados</h2>
+<table>
+  <thead><tr><th>Data/Hora</th><th>Medicamento</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for a in administracoes %}{% if a.prescricao.idoso.id == idoso.id %}
+    <tr>
+      <td>{{ a.data_hora|date:"d/m H:i" }}</td>
+      <td>{{ a.prescricao.medicamento.nome }}</td>
+      <td>{{ a.get_status_display }}</td>
+    </tr>
+    {% endif %}{% endfor %}
+  </tbody>
+</table>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'relatorios/pdf/base_pdf.html' %}
+{% block meta %}Relatório de Idosos{% endblock %}
+{% block content %}
+<h1>Relatório de Idosos</h1>
+<table>
+  <thead>
+    <tr><th>Nome</th><th>Idade</th><th>Quarto</th><th>Tipo Sang.</th><th>Entrada</th><th>Status</th><th>Alergias</th></tr>
+  </thead>
+  <tbody>
+    {% for i in idosos %}
+    <tr>
+      <td>{{ i.nome }}</td>
+      <td>{{ i.idade }} anos</td>
+      <td>{{ i.numero_quarto|default:"–" }}</td>
+      <td>{{ i.tipo_sanguineo|default:"–" }}</td>
+      <td>{{ i.data_entrada|date:"d/m/Y" }}</td>
+      <td><span class="badge {% if i.status == 'ativo' %}badge-ok{% else %}badge-warn{% endif %}">{{ i.get_status_display }}</span></td>
+      <td>{{ i.alergias|default:"–" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7">Nenhum idoso cadastrado.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p style="font-size:10px;color:#6B7280;">Total: {{ idosos|length }} idoso(s).</p>
+{% endblock %}

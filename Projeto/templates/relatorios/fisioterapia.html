@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Relatório de Fisioterapia – AsiloGest{% endblock %}
+{% block page_title %}Relatório de Fisioterapia{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'relatorios:fisioterapia' %}?pdf=1" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-pdf me-1"></i>Exportar PDF</a>
+<a href="{% url 'relatorios:lista' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Voltar</a>
+{% endblock %}
+
+{% block content %}
+{% if pendentes %}
+<div class="alert" style="background:#FFF3E0;border-left:4px solid #E65100;color:#E65100;">
+  <i class="bi bi-exclamation-circle me-2"></i>
+  <strong>{{ pendentes|length }} sessão(ões) aguardando autorização médica.</strong>
+  <a href="{% url 'fisioterapia:lista' %}" class="btn btn-sm btn-outline-warning ms-3">Ver pendentes</a>
+</div>
+{% endif %}
+
+<div class="table-card">
+  <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+    <span style="font-weight:600;font-size:.9rem;"><i class="bi bi-activity me-2" style="color:#2E7D32;"></i>Sessões de Fisioterapia</span>
+    <span class="badge bg-secondary">{{ sessoes|length }} registro(s)</span>
+  </div>
+  <table class="table table-hover">
+    <thead><tr><th>Idoso</th><th>Data</th><th>Fisioterapeuta</th><th>Autorizado</th><th>Status</th><th>Evolução</th></tr></thead>
+    <tbody>
+      {% for s in sessoes %}
+      <tr>
+        <td style="font-weight:500;font-size:.875rem;">{{ s.idoso.nome }}</td>
+        <td style="font-size:.85rem;">{{ s.data_hora|date:"d/m/Y H:i" }}</td>
+        <td style="font-size:.85rem;">{{ s.fisioterapeuta.get_full_name|default:"–" }}</td>
+        <td>
+          {% if s.autorizada %}
+            <span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.72rem;"><i class="bi bi-check2"></i> Sim</span>
+          {% else %}
+            <span class="badge" style="background:#FFF3E0;color:#E65100;font-size:.72rem;">Pendente</span>
+          {% endif %}
+        </td>
+        <td><span class="badge" style="font-size:.72rem;{% if s.status == 'realizada' %}background:#E8F5E9;color:#2E7D32;{% elif s.status == 'agendada' %}background:#E3F2FD;color:#1565C0;{% else %}background:#FFEBEE;color:#C62828;{% endif %}">{{ s.get_status_display }}</span></td>
+        <td style="font-size:.82rem;">{{ s.evolucao|truncatechars:50|default:"–" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted py-4">Nenhuma sessão encontrada.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

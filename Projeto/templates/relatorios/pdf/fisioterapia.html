@@ -1,0 +1,22 @@
+{% extends 'relatorios/pdf/base_pdf.html' %}
+{% block meta %}Relatório de Fisioterapia{% endblock %}
+{% block content %}
+<h1>Relatório de Fisioterapia</h1>
+<table>
+  <thead><tr><th>Data</th><th>Idoso</th><th>Fisioterapeuta</th><th>Autorizado</th><th>Status</th><th>Objetivo</th></tr></thead>
+  <tbody>
+    {% for s in sessoes %}
+    <tr>
+      <td>{{ s.data_hora|date:"d/m/Y" }}</td>
+      <td>{{ s.idoso.nome }}</td>
+      <td>{{ s.fisioterapeuta.get_full_name|default:"–" }}</td>
+      <td><span class="badge {% if s.autorizada %}badge-ok{% else %}badge-warn{% endif %}">{% if s.autorizada %}Sim{% else %}Não{% endif %}</span></td>
+      <td><span class="badge {% if s.status == 'realizada' %}badge-ok{% elif s.status == 'agendada' %}badge-info{% else %}badge-danger{% endif %}">{{ s.get_status_display }}</span></td>
+      <td>{{ s.objetivo|truncatechars:50|default:"–" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">Nenhuma sessão encontrada.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

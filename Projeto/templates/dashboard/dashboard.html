@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard – AsiloGest{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  {% if total_idosos is not None %}
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#E8F5E9;color:#2E7D32;"><i class="bi bi-person-fill"></i></div>
+        <div>
+          <div style="font-size:1.6rem;font-weight:700;color:#1B2A1E;">{{ total_idosos }}</div>
+          <div style="font-size:.8rem;color:#6B7280;">Idosos Ativos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if total_funcionarios is not None %}
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#E3F2FD;color:#1565C0;"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <div style="font-size:1.6rem;font-weight:700;color:#1B2A1E;">{{ total_funcionarios }}</div>
+          <div style="font-size:.8rem;color:#6B7280;">Funcionários</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if consultas_hoje is not None %}
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#F3E5F5;color:#6A1B9A;"><i class="bi bi-clipboard2-pulse-fill"></i></div>
+        <div>
+          <div style="font-size:1.6rem;font-weight:700;color:#1B2A1E;">{{ consultas_hoje }}</div>
+          <div style="font-size:.8rem;color:#6B7280;">Consultas Hoje</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if medicamentos_estoque_baixo is not None %}
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#FFEBEE;color:#C62828;"><i class="bi bi-capsule-pill"></i></div>
+        <div>
+          <div style="font-size:1.6rem;font-weight:700;color:#C62828;">{{ medicamentos_estoque_baixo }}</div>
+          <div style="font-size:.8rem;color:#6B7280;">Estoque Baixo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div class="row g-3">
+  {% if consultas_proximas %}
+  <div class="col-12 col-lg-6">
+    <div class="table-card">
+      <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+        <span style="font-weight:600;font-size:.9rem;"><i class="bi bi-calendar-check me-2" style="color:#2E7D32;"></i>Próximas Consultas</span>
+        <a href="{% url 'consultas:lista' %}" class="btn btn-sm btn-outline-primary" style="font-size:.75rem;">Ver todas</a>
+      </div>
+      <table class="table table-hover">
+        <tbody>
+          {% for c in consultas_proximas %}
+          <tr>
+            <td>
+              <div style="font-weight:500;font-size:.875rem;">{{ c.idoso.nome }}</div>
+              <div style="font-size:.75rem;color:#6B7280;">{{ c.get_tipo_display }}</div>
+            </td>
+            <td class="text-end">
+              <div style="font-size:.85rem;color:#374151;">{{ c.data_hora|date:"d/m H:i" }}</div>
+              <div style="font-size:.75rem;color:#6B7280;">Dr. {{ c.medico.get_full_name|default:"–" }}</div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if idosos_familiar %}
+  <div class="col-12 col-lg-6">
+    <div class="table-card">
+      <div class="px-3 py-2 border-bottom" style="font-weight:600;font-size:.9rem;">
+        <i class="bi bi-person-fill me-2" style="color:#2E7D32;"></i>Seus Familiares
+      </div>
+      <table class="table table-hover">
+        <tbody>
+          {% for idoso in idosos_familiar %}
+          <tr>
+            <td>
+              <div style="font-weight:500;">{{ idoso.nome }}</div>
+              <div style="font-size:.8rem;color:#6B7280;">{{ idoso.idade }} anos – Quarto {{ idoso.numero_quarto|default:"–" }}</div>
+            </td>
+            <td class="text-end">
+              <a href="{% url 'idosos:detalhe' idoso.pk %}" class="btn btn-sm btn-outline-success" style="font-size:.75rem;">
+                <i class="bi bi-eye"></i> Ver
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if rotinas_hoje %}
+  <div class="col-12 col-lg-6">
+    <div class="table-card">
+      <div class="px-3 py-2 border-bottom" style="font-weight:600;font-size:.9rem;">
+        <i class="bi bi-calendar2-check me-2" style="color:#2E7D32;"></i>Rotina de Hoje
+      </div>
+      <table class="table">
+        <tbody>
+          {% for rotina in rotinas_hoje %}
+          {% for p in rotina.periodos.all %}
+          <tr>
+            <td>
+              <div style="font-weight:500;">{{ rotina.idoso.nome }}</div>
+              <div style="font-size:.8rem;color:#6B7280;">{{ p.get_periodo_display }}</div>
+            </td>
+            <td>
+              {% if p.banho_realizado %}<span class="badge" style="background:#E8F5E9;color:#2E7D32;font-size:.7rem;"><i class="bi bi-check2"></i> Banho</span>{% endif %}
+              {% if p.higiene_oral %}<span class="badge ms-1" style="background:#E8F5E9;color:#2E7D32;font-size:.7rem;"><i class="bi bi-check2"></i> Higiene</span>{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
